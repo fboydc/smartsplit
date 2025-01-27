@@ -11,67 +11,37 @@ services:
   go:
     networks:
       - "quickstart"
-    depends_on:
-      - "frontend"
     build:
       context: .
       dockerfile: ./go/Dockerfile
     ports: ["8000:8000"]
     environment:
       <<: *QUICKSTART_ENVIRONMENT
-  java:
+  pg: 
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    ports: ["5432:5432"]
     networks:
       - "quickstart"
-    depends_on:
-      - "frontend"
-    build:
-      context: .
-      dockerfile: ./java/Dockerfile
-    ports: ["8000:8000"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  pgadmin:
+    image: dpage/pgadmin4
     environment:
-      <<: *QUICKSTART_ENVIRONMENT
-  node:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
     networks:
       - "quickstart"
-    depends_on:
-      - "frontend"
-    build:
-      context: .
-      dockerfile: ./node/Dockerfile
-    ports: ["8000:8000"]
-    environment:
-      <<: *QUICKSTART_ENVIRONMENT
-  python:
-    networks:
-      - "quickstart"
-    depends_on:
-      - "frontend"
-    build:
-      context: .
-      dockerfile: ./python/Dockerfile
-    ports: ["8000:8000"]
-    environment:
-      <<: *QUICKSTART_ENVIRONMENT
-  ruby:
-    networks:
-      - "quickstart"
-    depends_on:
-      - "frontend"
-    build:
-      context: .
-      dockerfile: ./ruby/Dockerfile
-    ports: ["8000:8000"]
-    environment:
-      <<: *QUICKSTART_ENVIRONMENT
-  frontend:
-    environment:
-      - REACT_APP_API_HOST
-    networks:
-      - "quickstart"
-    build:
-      context: .
-      dockerfile: ./frontend/Dockerfile
-    ports: ["3000:3000"]
+    
 networks:
   quickstart:
     name: quickstart
+
+volumes:
+  postgres_data:

@@ -17,7 +17,9 @@ interface QuickstartState {
     error_message: string;
     error_code: string;
     error_type: string;
-  };
+  },
+  isAuthenticated: boolean,
+  user: string
 }
 
 const initialState: QuickstartState = {
@@ -38,6 +40,8 @@ const initialState: QuickstartState = {
     error_code: "",
     error_message: "",
   },
+  isAuthenticated: false,
+  user: ""
 };
 
 type QuickstartAction = {
