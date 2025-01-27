@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"database/sql"
 	"encoding/base64"
 	"fmt"
 	"io"
@@ -27,6 +28,7 @@ var (
 	PLAID_REDIRECT_URI                   = ""
 	APP_PORT                             = ""
 	client              *plaid.APIClient = nil
+	DB                  *sql.DB          = nil
 )
 
 var environments = map[string]plaid.Environment{
@@ -83,8 +85,25 @@ func init() {
 	client = plaid.NewAPIClient(configuration)
 }
 
+func initDB() error {
+
+	db, err := sql.Open("postgres", "user=youruser password=yourpassword dbname=yourdb sslmode=disable")
+	if err != nil {
+		return err
+	}
+	DB = db
+	return nil
+}
+
 func main() {
 	r := gin.Default()
+
+	err := initDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer DB.Close()
 
 	r.POST("/api/info", info)
 
@@ -119,8 +138,9 @@ func main() {
 	r.GET("/api/cra/get_base_report", getCraBaseReportHandler)
 	r.GET("/api/cra/get_income_insights", getCraIncomeInsightsHandler)
 	r.GET("/api/cra/get_partner_insights", getCraPartnerInsightsHandler)
+	r.POST("/api/auth/login", authLogin)
 
-	err := r.Run(":" + APP_PORT)
+	err = r.Run(":" + APP_PORT)
 	if err != nil {
 		panic("unable to start server")
 	}
@@ -139,6 +159,22 @@ var paymentID string
 // persistent data store
 var authorizationID string
 var accountID string
+
+func authLogin(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+
+	// Compare the stored hashed password with the password provided by the user
+	/*if comparePasswords("hashedPassword", password) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Login successful",
+		})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid credentials",
+		})
+	}		*/
+}
 
 func renderError(c *gin.Context, originalErr error) {
 	if plaidError, err := plaid.ToPlaidError(originalErr); err == nil {
