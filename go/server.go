@@ -36,6 +36,12 @@ var environments = map[string]plaid.Environment{
 	"production": plaid.Production,
 }
 
+// LoginRequest represents the login payload
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func init() {
 	// load env vars from .env file
 	err := godotenv.Load()
@@ -85,25 +91,15 @@ func init() {
 	client = plaid.NewAPIClient(configuration)
 }
 
-func initDB() error {
-
-	db, err := sql.Open("postgres", "user=youruser password=yourpassword dbname=yourdb sslmode=disable")
-	if err != nil {
-		return err
-	}
-	DB = db
-	return nil
-}
-
 func main() {
 	r := gin.Default()
 
-	err := initDB()
+	DB, err := InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer DB.Close()
+	defer CloseDB(DB)
 
 	r.POST("/api/info", info)
 
@@ -138,7 +134,7 @@ func main() {
 	r.GET("/api/cra/get_base_report", getCraBaseReportHandler)
 	r.GET("/api/cra/get_income_insights", getCraIncomeInsightsHandler)
 	r.GET("/api/cra/get_partner_insights", getCraPartnerInsightsHandler)
-	r.POST("/api/auth/login", authLogin)
+	r.POST("/api/auth/login", loginHandler)
 
 	err = r.Run(":" + APP_PORT)
 	if err != nil {
@@ -160,20 +156,39 @@ var paymentID string
 var authorizationID string
 var accountID string
 
-func authLogin(c *gin.Context) {
+func loginHandler(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 
-	// Compare the stored hashed password with the password provided by the user
-	/*if comparePasswords("hashedPassword", password) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Login successful",
+	auth, err := AuthenthicateUser(username, password, DB)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal server error: Could not authenticate user",
 		})
-	} else {
+		return
+	}
+
+	if !auth {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Invalid credentials",
 		})
-	}		*/
+		return
+	}
+
+	token, err := GenerateJWT(username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal server error: Could not generate token",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "Login successful",
+		"username": username,
+		"token":    token,
+	})
+
 }
 
 func renderError(c *gin.Context, originalErr error) {
