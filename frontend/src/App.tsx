@@ -18,14 +18,14 @@ const App = () => {
   return (
     <div className={styles.App}>
       <div className={styles.container}>
-        { //isAuthenticated && 
+        { isAuthenticated && 
         <div>
              Welcome {user}, 
               <Main />     
-        </div> } {/*
+        </div> } {
         !isAuthenticated && 
           <Login />
-       */ }
+       }
       </div>
     </div>
   );

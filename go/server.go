@@ -37,7 +37,7 @@ var environments = map[string]plaid.Environment{
 }
 
 // LoginRequest represents the login payload
-type LoginRequest struct {
+type loginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -101,40 +101,45 @@ func main() {
 
 	defer CloseDB(DB)
 
-	r.POST("/api/info", info)
-
-	// For OAuth flows, the process looks as follows.
-	// 1. Create a link token with the redirectURI (as white listed at https://dashboard.plaid.com/team/api).
-	// 2. Once the flow succeeds, Plaid Link will redirect to redirectURI with
-	// additional parameters (as required by OAuth standards and Plaid).
-	// 3. Re-initialize with the link token (from step 1) and the full received redirect URI
-	// from step 2.
-
-	r.POST("/api/set_access_token", getAccessToken)
-	r.POST("/api/create_link_token_for_payment", createLinkTokenForPayment)
-	r.GET("/api/auth", auth)
-	r.GET("/api/accounts", accounts)
-	r.GET("/api/balance", balance)
-	r.GET("/api/item", item)
-	r.POST("/api/item", item)
-	r.GET("/api/identity", identity)
-	r.GET("/api/transactions", transactions)
-	r.POST("/api/transactions", transactions)
-	r.GET("/api/payment", payment)
-	r.GET("/api/create_public_token", createPublicToken)
-	r.POST("/api/create_link_token", createLinkToken)
-	r.POST("/api/create_user_token", createUserToken)
-	r.GET("/api/investments_transactions", investmentTransactions)
-	r.GET("/api/holdings", holdings)
-	r.GET("/api/assets", assets)
-	r.GET("/api/transfer_authorize", transferAuthorize)
-	r.GET("/api/transfer_create", transferCreate)
-	r.GET("/api/signal_evaluate", signalEvaluate)
-	r.GET("/api/statements", statements)
-	r.GET("/api/cra/get_base_report", getCraBaseReportHandler)
-	r.GET("/api/cra/get_income_insights", getCraIncomeInsightsHandler)
-	r.GET("/api/cra/get_partner_insights", getCraPartnerInsightsHandler)
 	r.POST("/api/auth/login", loginHandler)
+
+	protected := r.Group("/")
+	protected.Use(AuthMiddleware())
+	{
+		r.POST("/api/info", info)
+
+		// For OAuth flows, the process looks as follows.
+		// 1. Create a link token with the redirectURI (as white listed at https://dashboard.plaid.com/team/api).
+		// 2. Once the flow succeeds, Plaid Link will redirect to redirectURI with
+		// additional parameters (as required by OAuth standards and Plaid).
+		// 3. Re-initialize with the link token (from step 1) and the full received redirect URI
+		// from step 2.
+
+		protected.POST("/api/set_access_token", getAccessToken)
+		protected.POST("/api/create_link_token_for_payment", createLinkTokenForPayment)
+		protected.GET("/api/auth", auth)
+		protected.GET("/api/accounts", accounts)
+		protected.GET("/api/balance", balance)
+		protected.GET("/api/item", item)
+		protected.POST("/api/item", item)
+		protected.GET("/api/identity", identity)
+		protected.GET("/api/transactions", transactions)
+		protected.POST("/api/transactions", transactions)
+		protected.GET("/api/payment", payment)
+		protected.GET("/api/create_public_token", createPublicToken)
+		protected.POST("/api/create_link_token", createLinkToken)
+		protected.POST("/api/create_user_token", createUserToken)
+		protected.GET("/api/investments_transactions", investmentTransactions)
+		protected.GET("/api/holdings", holdings)
+		protected.GET("/api/assets", assets)
+		protected.GET("/api/transfer_authorize", transferAuthorize)
+		protected.GET("/api/transfer_create", transferCreate)
+		protected.GET("/api/signal_evaluate", signalEvaluate)
+		protected.GET("/api/statements", statements)
+		protected.GET("/api/cra/get_base_report", getCraBaseReportHandler)
+		protected.GET("/api/cra/get_income_insights", getCraIncomeInsightsHandler)
+		protected.GET("/api/cra/get_partner_insights", getCraPartnerInsightsHandler)
+	}
 
 	err = r.Run(":" + APP_PORT)
 	if err != nil {
@@ -157,10 +162,14 @@ var authorizationID string
 var accountID string
 
 func loginHandler(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
 
-	auth, err := AuthenthicateUser(username, password, DB)
+	var requestBody loginRequest
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	auth, userid, err := AuthenthicateUser(requestBody.Username, requestBody.Password, DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal server error: Could not authenticate user",
@@ -175,7 +184,7 @@ func loginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := GenerateJWT(username)
+	token, err := GenerateJWT(userid, DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal server error: Could not generate token",
@@ -184,9 +193,8 @@ func loginHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":  "Login successful",
-		"username": username,
-		"token":    token,
+		"message": "Login successful",
+		"token":   token,
 	})
 
 }

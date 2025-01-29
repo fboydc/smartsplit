@@ -1,10 +1,14 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+
+	_ "github.com/lib/pq"
+)
 
 func InitDB() (*sql.DB, error) {
 
-	db, err := sql.Open("postgres", "user=postgres password=password dbname=cust_data sslmode=disable")
+	db, err := sql.Open("postgres", "host=localhost port=5432 user=postgres password=password dbname=cust_data sslmode=disable")
 	if err != nil {
 		return nil, err
 	}
