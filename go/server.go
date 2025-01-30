@@ -163,13 +163,11 @@ var accountID string
 
 func loginHandler(c *gin.Context) {
 
-	var requestBody loginRequest
-	if err := c.ShouldBindJSON(&requestBody); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+	//var requestBody loginRequest
+	uname := c.PostForm("user")
+	passwd := c.PostForm("password")
 
-	auth, userid, err := AuthenthicateUser(requestBody.Username, requestBody.Password, DB)
+	auth, userid, err := AuthenthicateUser(uname, passwd, DB)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Internal server error: Could not authenticate user",
