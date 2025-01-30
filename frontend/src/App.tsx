@@ -9,6 +9,7 @@ import Login from "./Components/Session/login";
 import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import Main from "./Main";
+import { Navigate } from "react-router";
 
 const App = () => {
 
@@ -18,14 +19,13 @@ const App = () => {
   return (
     <div className={styles.App}>
       <div className={styles.container}>
-        { isAuthenticated && 
         <div>
-             Welcome {user}, 
-              <Main />     
-        </div> } {
-        !isAuthenticated && 
-          <Login />
-       }
+          {
+            isAuthenticated ? 
+              <Main /> : 
+              <Navigate to="/login" />
+          }
+        </div>
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS "Users" (
   "username" varchar(255) NOT NULL,
   "email" varchar(255) NOT NULL,
   "password_hash" varchar(255) NOT NULL,
+  "plaid_access_token" varchar(255) NULL,
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

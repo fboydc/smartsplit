@@ -1,25 +1,34 @@
 import React, { useState, useContext } from "react";
 import Context from "../../Context";
 import styles from "./index.module.scss";
+import { useNavigate } from "react-router";
 //comment
 
 const Login = () => {
-    const [email, setEmail] = useState("");
+    const [user, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const { dispatch } = useContext(Context);
+    const navigate = useNavigate();
     
     const handleSubmit = async (e: React.FormEvent) => {
+        console.log( JSON.stringify({ user, password }))
         e.preventDefault();
-        const response = await fetch("/api/login", {
+
+        const formData = new FormData();
+        formData.append("user", user);
+        formData.append("password", password);
+        const response = await fetch(`/api/auth/login`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
+       /* headers: {
+            "Content-Type": "multipart/form-data",
+        },*/
+        body: formData,
         });
         if (response.ok) {
-        const data = await response.json();
-        dispatch({ type: "SET_STATE", state: { user: data.user, linkSuccess: true} });
+            const data = await response.json();
+            console.log(data);
+            dispatch({ type: "SET_STATE", state: { user: data.user, linkSuccess: true, isAuthenticated: true} });
+            navigate("/");
         }
     };
     
@@ -28,10 +37,10 @@ const Login = () => {
             <div className={styles.container}>
             <form onSubmit={handleSubmit} className={styles.loginForm}>
                 <input
-                type="email"
-                value={email}
+                type="text"
+                value={user}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder="User"
                 />
                 <input
                 type="password"
