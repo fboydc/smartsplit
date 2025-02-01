@@ -7,17 +7,24 @@ import Context from "./Context";
 
 import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
+import { Navigate, useNavigate } from "react-router";
 
 const Main = () => {
-  const { linkSuccess, isPaymentInitiation, itemId, dispatch } =
+  const { linkSuccess, isPaymentInitiation, itemId, dispatch, isAuthenticated, sessionToken } =
     useContext(Context);
 
+  const navigate = useNavigate();
+  if (!isAuthenticated) {
+    navigate("/login")
+  }
   const getInfo = useCallback(async () => {
     const response = await fetch("/api/info", { method: "POST" });
     if (!response.ok) {
       dispatch({ type: "SET_STATE", state: { backend: false } });
       return { paymentInitiation: false };
+
     }
+
     const data = await response.json();
     const paymentInitiation: boolean =
       data.products.includes("payment_initiation");
@@ -71,7 +78,13 @@ const Main = () => {
         : "/api/create_link_token";
       const response = await fetch(path, {
         method: "POST",
+        headers: {
+           "Authorization": sessionToken,
+           "Content-Type": "application/json"
+        }
       });
+
+      console.log("response:" +  response.status)
       if (!response.ok) {
         dispatch({ type: "SET_STATE", state: { linkToken: null } });
         return;
@@ -119,10 +132,12 @@ const Main = () => {
     init();
   }, [dispatch, generateToken, generateUserToken, getInfo]);
 
+  
   return (
     <div className={styles.App}>
       <div className={styles.container}>
         <Header />
+
         {linkSuccess && (
           <>
             <Products />

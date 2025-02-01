@@ -4,6 +4,9 @@ import Button from "plaid-threads/Button";
 
 import Context from "../../Context";
 
+
+
+
 const Link = () => {
   const { linkToken, isPaymentInitiation, isCraProductsExclusively, dispatch } =
     useContext(Context);
@@ -39,6 +42,7 @@ const Link = () => {
             isItemAccess: true,
           },
         });
+
       };
 
       // 'payment_initiation' products do not require the public_token to be exchanged for an access_token.
@@ -80,7 +84,7 @@ const Link = () => {
 
   return (
     <Button type="button" large onClick={() => open()} disabled={!ready}>
-      Launch Link
+      Let's Go
     </Button>
   );
 };

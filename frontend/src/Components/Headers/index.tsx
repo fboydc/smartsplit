@@ -21,6 +21,8 @@ const Header = () => {
     isPaymentInitiation,
   } = useContext(Context);
 
+  console.log("backend in header", backend);
+
   return (
     <div className={styles.grid}>
       <h3 className={styles.title}>Welcome to Smart Split!</h3>
@@ -28,7 +30,7 @@ const Header = () => {
       {!linkSuccess ? (
         <>
           <h4 className={styles.subtitle}>
-            The perfect way to keep your budet in check
+            The perfect way to keep your budget in check
           </h4>
           <p className={styles.introPar}>
             Let's start by linking your bank account. This will be used to 

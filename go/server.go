@@ -209,6 +209,7 @@ func renderError(c *gin.Context, originalErr error) {
 
 func getAccessToken(c *gin.Context) {
 	publicToken := c.PostForm("public_token")
+	user := c.PostForm("user")
 	ctx := context.Background()
 
 	// exchange the public_token for an access_token
@@ -223,14 +224,23 @@ func getAccessToken(c *gin.Context) {
 	accessToken = exchangePublicTokenResp.GetAccessToken()
 	itemID = exchangePublicTokenResp.GetItemId()
 
-	fmt.Println("public token: " + publicToken)
-	fmt.Println("access token: " + accessToken)
-	fmt.Println("item ID: " + itemID)
+	ok, err := saveAccessToken(accessToken, user, DB)
+	if err != nil {
+		renderError(c, err)
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"access_token": accessToken,
-		"item_id":      itemID,
-	})
+	if ok {
+		fmt.Println("public token: " + publicToken)
+		fmt.Println("access token: " + accessToken)
+		fmt.Println("item ID: " + itemID)
+
+		c.JSON(http.StatusOK, gin.H{
+			"access_token": accessToken,
+			"item_id":      itemID,
+		})
+	}
+
 }
 
 // This functionality is only relevant for the UK/EU Payment Initiation product.

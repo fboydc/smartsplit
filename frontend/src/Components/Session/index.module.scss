@@ -22,8 +22,8 @@ body > div {
   align-content:center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(45deg, #FF6B6B, #FFE66D);
-
 }
+
 
 .loginForm {
   width: 100%;
@@ -74,7 +74,7 @@ body > div {
 .mainContainer {
   display: flex;
   flex-wrap: wrap;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;

@@ -2,16 +2,20 @@ import React, { useState, useContext } from "react";
 import Context from "../../Context";
 import styles from "./index.module.scss";
 import { useNavigate } from "react-router";
+import AuthError  from "../Error/autherror"; 
 //comment
+
+
 
 const Login = () => {
     const [user, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { dispatch } = useContext(Context);
+    const { dispatch, authError, isAuthenticated, sessionToken } = useContext(Context);
+
     const navigate = useNavigate();
+   
     
     const handleSubmit = async (e: React.FormEvent) => {
-        console.log( JSON.stringify({ user, password }))
         e.preventDefault();
 
         const formData = new FormData();
@@ -19,18 +23,19 @@ const Login = () => {
         formData.append("password", password);
         const response = await fetch(`/api/auth/login`, {
         method: "POST",
-       /* headers: {
-            "Content-Type": "multipart/form-data",
-        },*/
         body: formData,
         });
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
-            dispatch({ type: "SET_STATE", state: { user: data.user, linkSuccess: true, isAuthenticated: true} });
+            console.log("ok")
+            dispatch({ type: "SET_STATE", state: { user: user, isAuthenticated: true, sessionToken: data.token }});
             navigate("/");
+        } else {
+            dispatch({ type: "SET_STATE", state: { authError: { error_code: String(response.status) } } });
         }
     };
+
+
     
     return (
         <div className={styles.mainContainer}>
@@ -51,7 +56,12 @@ const Login = () => {
                 <button type="submit" className={styles.formButton}>Login</button>
                 <label> Not Registered? </label><a href="#">Register Here</a>
             </form>
-        </div>
+            </div>
+            {
+                authError.error_code &&  
+                <div><AuthError /></div>
+            }
+           
         </div>
     );
 

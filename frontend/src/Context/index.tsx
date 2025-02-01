@@ -1,4 +1,4 @@
-import { createContext, useReducer, Dispatch, ReactNode } from "react";
+import { createContext, useReducer, Dispatch, ReactNode, useEffect } from "react";
 
 interface QuickstartState {
   linkSuccess: boolean;
@@ -18,8 +18,12 @@ interface QuickstartState {
     error_code: string;
     error_type: string;
   },
-  isAuthenticated: boolean,
-  user: string
+  authError: {
+    error_code: string;
+  }
+  isAuthenticated: boolean;
+  user: string | null;
+  sessionToken: string;
 }
 
 const initialState: QuickstartState = {
@@ -40,8 +44,12 @@ const initialState: QuickstartState = {
     error_code: "",
     error_message: "",
   },
+  authError: {
+    error_code: "",
+  },
   isAuthenticated: false,
-  user: ""
+  user: null,
+  sessionToken: ""
 };
 
 type QuickstartAction = {
@@ -56,6 +64,8 @@ interface QuickstartContext extends QuickstartState {
 const Context = createContext<QuickstartContext>(
   initialState as QuickstartContext
 );
+
+
 
 const { Provider } = Context;
 export const QuickstartProvider: React.FC<{ children: ReactNode }> = (
@@ -73,6 +83,40 @@ export const QuickstartProvider: React.FC<{ children: ReactNode }> = (
     }
   };
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  /*
+  const login = (user: string) => {
+      dispatch({ type: "SET_STATE", state: { isAuthenticated: true, user: user } });
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("user", user);
+  }
+
+  const logout = () => {
+    dispatch({ type: "SET_STATE", state: { isAuthenticated: false } });
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("user");
+  }
+*/
+
+  const checkIfSessionExists = () => {
+    // Need to implement this function
+    //It should go to server and check for an active session
+    //If session exists, it should return true, else false
+    
+  }
+
+  useEffect(() => {
+    const storedAuth = localStorage.getItem("isAuthenticated");
+    const storedUser = localStorage.getItem("user");
+    //use checkIfSessionExists to check if session exists
+    //if it does, set isAuthenticated to true
+    //else call logout
+    if (storedAuth && storedUser) {
+      dispatch({ type: "SET_STATE", state: { isAuthenticated: JSON.parse(storedAuth), user: storedUser } });
+    }
+  }, []);
+
+
   return <Provider value={{ ...state, dispatch }}>{props.children}</Provider>;
 };
 

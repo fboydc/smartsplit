@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -55,6 +56,16 @@ func GenerateJWT(userid string, db *sql.DB) (string, error) {
 	})
 
 	return token.SignedString(jwtSecret)
+}
+
+func saveAccessToken(accessToken string, user string, db *sql.DB) (bool, error) {
+	_, err := db.Exec(`UPDATE USER SET "plaid_access_token" = $1 where "user" = $2`, accessToken, user)
+	if err != nil {
+		return false, err
+	}
+	log.Print("Access token inserted for user: $1", user)
+	return true, nil
+
 }
 
 func ValidateJWT(tokenString string) (bool, error) {

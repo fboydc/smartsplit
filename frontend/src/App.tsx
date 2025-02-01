@@ -9,25 +9,19 @@ import Login from "./Components/Session/login";
 import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import Main from "./Main";
-import { Navigate } from "react-router";
+import { Navigate, Routes, Route } from "react-router";
 
 const App = () => {
 
-  const { isAuthenticated, user, dispatch } =
-    useContext(Context);
+  const { isAuthenticated } = useContext(Context);
+
+  console.log("isAuthenticated", isAuthenticated);  
 
   return (
-    <div className={styles.App}>
-      <div className={styles.container}>
-        <div>
-          {
-            isAuthenticated ? 
-              <Main /> : 
-              <Navigate to="/login" />
-          }
-        </div>
-      </div>
-    </div>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={ <Main />} />
+        </Routes>
   );
 };
 

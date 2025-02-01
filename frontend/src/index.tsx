@@ -15,10 +15,7 @@ root.render(
   <React.StrictMode>
     <QuickstartProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
+            <App />
       </BrowserRouter>
     </QuickstartProvider>
   </React.StrictMode>
