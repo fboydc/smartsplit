@@ -167,18 +167,20 @@ func loginHandler(c *gin.Context) {
 	uname := c.PostForm("user")
 	passwd := c.PostForm("password")
 
-	auth, userid, err := AuthenthicateUser(uname, passwd, DB)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error: Could not authenticate user",
-		})
-		return
-	}
+	auth, userid, plaidToken, err := AuthenthicateUser(uname, passwd, DB)
+	if err != nil || !auth {
 
-	if !auth {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Invalid credentials",
-		})
+		if err == sql.ErrNoRows || !auth {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "Invalid credentials",
+			})
+			return
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal server error: Could not authenticate user",
+			})
+		}
+
 		return
 	}
 
@@ -191,8 +193,9 @@ func loginHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Login successful",
-		"token":   token,
+		"message":    "Login successful",
+		"token":      token,
+		"plaidToken": plaidToken,
 	})
 
 }

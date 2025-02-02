@@ -8,7 +8,7 @@ import Context from "../../Context";
 
 
 const Link = () => {
-  const { linkToken, isPaymentInitiation, isCraProductsExclusively, dispatch } =
+  const { linkToken, isPaymentInitiation, isCraProductsExclusively, dispatch, sessionToken, user } =
     useContext(Context);
 
   const onSuccess = React.useCallback(
@@ -19,8 +19,9 @@ const Link = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+            "Authorization":sessionToken
           },
-          body: `public_token=${public_token}`,
+          body: `public_token=${public_token}&user=${user}`,
         });
         if (!response.ok) {
           dispatch({

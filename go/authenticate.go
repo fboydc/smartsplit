@@ -35,18 +35,18 @@ func comparePasswords(hashedPwd string, plainPwd string) bool {
 	return true
 }
 
-func AuthenthicateUser(username string, password string, db *sql.DB) (bool, string, error) {
-	var hashedPassword, userid string
-	err := db.QueryRow(`SELECT user_id, password_hash FROM "Users" WHERE username = $1`, username).Scan(&userid, &hashedPassword)
+func AuthenthicateUser(username string, password string, db *sql.DB) (bool, string, string, error) {
+	var hashedPassword, plaidAccesToken, userid sql.NullString
+	err := db.QueryRow(`SELECT user_id, password_hash, plaid_access_token FROM "Users" WHERE username = $1`, username).Scan(&userid, &hashedPassword, &plaidAccesToken)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// User not found
-			return false, "", err
+			return false, "", "", err
 		}
-		return false, "", err
+		return false, "", "", err
 	}
 
-	return comparePasswords(hashedPassword, password), userid, nil
+	return comparePasswords(hashedPassword.String, password), userid.String, plaidAccesToken.String, nil
 }
 
 func GenerateJWT(userid string, db *sql.DB) (string, error) {
@@ -59,7 +59,7 @@ func GenerateJWT(userid string, db *sql.DB) (string, error) {
 }
 
 func saveAccessToken(accessToken string, user string, db *sql.DB) (bool, error) {
-	_, err := db.Exec(`UPDATE USER SET "plaid_access_token" = $1 where "user" = $2`, accessToken, user)
+	_, err := db.Exec(`UPDATE "Users" SET plaid_access_token = $1 where username = $2`, accessToken, user)
 	if err != nil {
 		return false, err
 	}
@@ -83,6 +83,8 @@ func AuthMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
+		accessToken = c.GetHeader("AccessToken")
+
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
 			c.Abort()

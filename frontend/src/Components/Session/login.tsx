@@ -10,7 +10,7 @@ import AuthError  from "../Error/autherror";
 const Login = () => {
     const [user, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { dispatch, authError, isAuthenticated, sessionToken } = useContext(Context);
+    const { dispatch, authError, isAuthenticated, sessionToken, accessToken } = useContext(Context);
 
     const navigate = useNavigate();
    
@@ -27,8 +27,13 @@ const Login = () => {
         });
         if (response.ok) {
             const data = await response.json();
-            console.log("ok")
-            dispatch({ type: "SET_STATE", state: { user: user, isAuthenticated: true, sessionToken: data.token }});
+            console.log("Data returned: "+ data);
+            if (data.plaidToken) {
+                dispatch({ type: "SET_STATE", state: { user: user, isAuthenticated: true, sessionToken: data.token, accessToken: data.plaidToken, linkSuccess: true }});
+            } else {
+                dispatch({ type: "SET_STATE", state: { user: user, isAuthenticated: true, sessionToken: data.token }});
+            }
+
             navigate("/");
         } else {
             dispatch({ type: "SET_STATE", state: { authError: { error_code: String(response.status) } } });

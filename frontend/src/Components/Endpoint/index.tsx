@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "plaid-threads/Button";
 import Note from "plaid-threads/Note";
-
+import Context from "../../Context";
 import Table from "../Table";
 import Error from "../Error";
 import { DataItem, Categories, ErrorDataItem, Data } from "../../dataUtilities";
@@ -17,6 +17,11 @@ interface Props {
   transformData: (arg: any) => Array<DataItem>;
 }
 
+
+
+
+
+
 const Endpoint = (props: Props) => {
   const [showTable, setShowTable] = useState(false);
   const [transformedData, setTransformedData] = useState<Data>([]);
@@ -24,9 +29,17 @@ const Endpoint = (props: Props) => {
   const [error, setError] = useState<ErrorDataItem | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { sessionToken, accessToken } = useContext(Context)
+
   const getData = async () => {
+
     setIsLoading(true);
-    const response = await fetch(`/api/${props.endpoint}`, { method: "GET" });
+    const response = await fetch(`/api/${props.endpoint}`, { method: "GET", 
+                                                            headers: {
+                                                             "Content-Type": "application/json",
+                                                             "Authorization": sessionToken,
+                                                             "AccessToken": accessToken,
+                                                            }});
     const data = await response.json();
     if (data.error != null) {
       setError(data.error);

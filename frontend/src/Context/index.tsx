@@ -7,7 +7,7 @@ interface QuickstartState {
   isUserTokenFlow: boolean;
   isCraProductsExclusively: boolean;
   linkToken: string | null;
-  accessToken: string | null;
+  accessToken: string;
   userToken: string | null;
   itemId: string | null;
   isError: boolean;
@@ -34,7 +34,7 @@ const initialState: QuickstartState = {
   isUserTokenFlow: false,
   linkToken: "", // Don't set to null or error message will show up briefly when site loads
   userToken: null,
-  accessToken: null,
+  accessToken: "",
   itemId: null,
   isError: false,
   backend: true,
