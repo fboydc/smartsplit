@@ -32,7 +32,9 @@ const Categories = () => {
 
 
    const transformData = (data: any) => {
-    console.log("Categores in transformData ", data)
+       data.forEach((category: any) => {  
+          
+       })
    }
 
 
