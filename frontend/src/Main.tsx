@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useCallback } from "react";
 
 import Header from "./Components/Headers";
 import Products from "./Components/ProductTypes/Products";
+import Categories from "./Components/ProductTypes/Categories";
 import Items from "./Components/ProductTypes/Items";
 import Context from "./Context";
 
@@ -137,7 +138,7 @@ const Main = () => {
     <div className={styles.App}>
       <div className={styles.container}>
         <Header />
-
+        <Categories />
         {linkSuccess && (
           <>
             <Products />

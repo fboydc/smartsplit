@@ -120,6 +120,7 @@ func main() {
 		protected.GET("/api/auth", auth)
 		protected.GET("/api/accounts", accounts)
 		protected.GET("/api/balance", balance)
+		protected.GET("/api/categories", getCategories)
 		protected.GET("/api/item", item)
 		protected.POST("/api/item", item)
 		protected.GET("/api/identity", identity)
@@ -198,6 +199,20 @@ func loginHandler(c *gin.Context) {
 		"plaidToken": plaidToken,
 	})
 
+}
+
+func getCategories(c *gin.Context) {
+	ctx := context.Background()
+	categoriesResp, _, err := client.PlaidApi.CategoriesGet(ctx).Body(nil).Execute()
+
+	if err != nil {
+		renderError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"categories": categoriesResp.GetCategories(),
+	})
 }
 
 func renderError(c *gin.Context, originalErr error) {
