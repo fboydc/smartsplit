@@ -4554,7 +4554,7 @@
             "hierarchy": [
                 "Shops",
                 "Pets"
-            ]
+            ]  
         },
         {
             "category_id": "19043000",
@@ -4666,7 +4666,7 @@
                 "Tax",
                 "Refund"
             ]
-        },
+        }, 
         {
             "category_id": "20002000",
             "group": "special",

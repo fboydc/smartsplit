@@ -3,7 +3,24 @@ import Context from "../../Context";
 
 
 
-
+const Columns = [
+  {
+    Header: "Name",
+    type: "text",
+  },
+  {
+    Header: "Category",
+    type: "select",
+  },
+  {
+    Header: "Amount",
+    accessor: "number",
+  },
+  {
+    Header: "Allocation",
+    accessor: "percent",
+  },
+]
 
 
 const Categories = () => {
@@ -32,9 +49,15 @@ const Categories = () => {
 
 
    const transformData = (data: any) => {
-       data.forEach((category: any) => {  
-          
-       })
+      var categories
+       categories = data.map((category: any) => {
+          return {
+            key: category.category_id,
+            description: category.hierarchy,
+          }
+        })
+
+      console.log("CATEGORIES", categories)
    }
 
 
@@ -49,7 +72,8 @@ const Categories = () => {
 
     return (
       <div>
-        <h1>Categories</h1>
+        <h1>Budgeting Strategy</h1>
+
       </div>
     );
 };
