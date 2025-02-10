@@ -2,13 +2,14 @@ import React, { useEffect, useContext, useCallback } from "react";
 
 import Header from "./Components/Headers";
 import Products from "./Components/ProductTypes/Products";
-import Categories from "./Components/ProductTypes/Categories";
+import Categories from "./Components/ProductTypes/BudgetSetup";
 import Items from "./Components/ProductTypes/Items";
 import Context from "./Context";
 
 import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import { Navigate, useNavigate } from "react-router";
+import Dashboard from "./Components/ProductTypes/Dashboard";
 
 const Main = () => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch, isAuthenticated, sessionToken } =
@@ -138,11 +139,9 @@ const Main = () => {
     <div className={styles.App}>
       <div className={styles.container}>
         <Header />
-        <Categories />
         {linkSuccess && (
           <>
-            <Products />
-            {!isPaymentInitiation && itemId && <Items />}
+            <Dashboard />           
           </>
         )}
       </div>

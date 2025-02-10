@@ -10,6 +10,7 @@ import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import Main from "./Main";
 import { Navigate, Routes, Route } from "react-router";
+import Categories from "./Components/ProductTypes/BudgetSetup";
 
 const App = () => {
 
@@ -21,6 +22,7 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={ <Main />} />
+          <Route path="/budgeting" element={ <Categories />} />
         </Routes>
   );
 };
