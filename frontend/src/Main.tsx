@@ -9,7 +9,7 @@ import Context from "./Context";
 import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import { Navigate, useNavigate } from "react-router";
-import Dashboard from "./Components/ProductTypes/Dashboard";
+import Dashboard from "./Components/Dashboard/Dashboard";
 
 const Main = () => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch, isAuthenticated, sessionToken } =

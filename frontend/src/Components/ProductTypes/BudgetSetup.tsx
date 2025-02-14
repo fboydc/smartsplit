@@ -101,6 +101,8 @@ const BudgetSetup = () => {
       <div>
         <h1>Budgeting Strategy</h1>
         <div>
+          <h2>Income Allocation</h2>
+          <hr />
           <h3>Needs</h3>
           <ExpandableTable categories={categories} fields={needs} setFields={setNeeds}/>
           <br />

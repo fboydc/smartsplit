@@ -1,0 +1,25 @@
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+@media (min-width: 768px){
+    .col-md-3 {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+}
+
+
+@media (min-width: 992px){
+    .col-lg-2 {
+        flex: 0 0 auto;
+        width: 16%;
+    }
+}
+
+.position-relative {
+    position: relative;
+}
+
