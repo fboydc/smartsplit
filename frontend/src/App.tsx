@@ -10,7 +10,7 @@ import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import Main from "./Main";
 import { Navigate, Routes, Route } from "react-router";
-import Categories from "./Components/ProductTypes/BudgetSetup";
+import Categories from "./Components/Dashboard/BudgetSetup";
 
 const App = () => {
 

@@ -4,15 +4,6 @@ $threads-font-path: "~plaid-threads/fonts";
 
 * {
   box-sizing: border-box;
+  width: 100%;
 }
 
-
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 70 * $unit;
-  max-width: 120 * $unit;
-  margin: 0 auto;
-  height: 100%;
-}

@@ -6,13 +6,14 @@
   flex-direction: column;
   margin: auto;
   margin-bottom: 2 * $unit;
+  background-color: #b84bbd;
+  color: #fff;
 }
 
 .title {
-  margin-top: 9 * $unit;
-  margin-bottom: 0;
   font-weight: 800;
   height: 6 * $unit;
+  text-align: center ;
 }
 
 .subtitle {
