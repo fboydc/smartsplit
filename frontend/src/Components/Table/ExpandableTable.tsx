@@ -5,7 +5,9 @@ import { format } from 'path';
 interface ExpandableTableProps {
     categories: Category[];
     fields: any[];
-    setFields: React.Dispatch<React.SetStateAction<{id: number; name: string; amount: number; category: string; }[]>>
+    setFields: React.Dispatch<React.SetStateAction<{id: number; name: string; amount: string; category: string; }[]>>;
+    formatCurrency: (value: string) => string;
+    subtotal: string;
 
 }
 interface Category {
@@ -13,13 +15,13 @@ interface Category {
     description: string;
 }
 
-const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, setFields }) => {
+const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, setFields, formatCurrency, subtotal }) => {
    
 
 
     
     
-    const addRow = ({name, amount, categoryId}: {name: string, amount: number, categoryId: string}) => {
+    const addRow = ({name, amount, categoryId}: {name: string, amount: string, categoryId: string}) => {
         const newRow = { id: fields.length + 1, name: name, amount: amount, category: categoryId };
         setFields([...fields, newRow]);
     }
@@ -29,14 +31,17 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
         setFields(newRows);
     }
     
-    const handleChange = (id: number, field: string, value: string | number) => {
+    const handleChange = (id: number, field: string, value: string) => {
+
+        if (field === "amount") {
+           value =  formatCurrency(value);
+        }
 
         setFields(
             fields.map((row) => (row.id === id ? { ...row, [field]: value } : row))
         )
+
     }
-
-
    
     return (
         <div>
@@ -70,9 +75,17 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
                             </td>
                         </tr>
                     ))}
+                    <tr className={styles.subTotalRow}>
+                        <td>
+                            <p>Sub-Total</p>
+                        </td>
+                        <td colSpan={6}>
+                            <p>{subtotal}</p>
+                        </td>
+                    </tr>
                     <tr>
                         <td colSpan={3}>
-                            <button className={styles.tableButton} onClick={() => addRow({name: "", amount: 0, categoryId: ""})}>Add Row</button>
+                            <button className={styles.tableButton} onClick={() => addRow({name: "", amount: "", categoryId: ""})}>Add Row</button>
                         </td>
                         <td />
                     </tr>

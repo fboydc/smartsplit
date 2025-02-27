@@ -36,6 +36,14 @@ var environments = map[string]plaid.Environment{
 	"production": plaid.Production,
 }
 
+// Category represents a category in the database
+type Category struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	PlaidId     string `json:"plaid_id"`
+}
+
 // LoginRequest represents the login payload
 type loginRequest struct {
 	Username string `json:"username"`
@@ -120,6 +128,7 @@ func main() {
 		protected.GET("/api/auth", auth)
 		protected.GET("/api/accounts", accounts)
 		protected.GET("/api/balance", balance)
+		protected.GET("/api/plaid_categories", getPlaidCategories)
 		protected.GET("/api/categories", getCategories)
 		protected.GET("/api/item", item)
 		protected.POST("/api/item", item)
@@ -201,7 +210,7 @@ func loginHandler(c *gin.Context) {
 
 }
 
-func getCategories(c *gin.Context) {
+func getPlaidCategories(c *gin.Context) {
 	ctx := context.Background()
 	categoriesResp, _, err := client.PlaidApi.CategoriesGet(ctx).Body(nil).Execute()
 
@@ -213,6 +222,24 @@ func getCategories(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"categories": categoriesResp.GetCategories(),
 	})
+}
+
+func getCategories(c *gin.Context) {
+	rows, err := executeQuery("SELECT * FROM categories", DB)
+	if err != nil {
+		renderError(c, err)
+	}
+
+	returnCategories := []Category{}
+	for rows.Next() {
+		var category Category
+		err = rows.Scan(&category.ID, &category.Name)
+		if err != nil {
+			renderError(c, err)
+		}
+		returnCategories = append(returnCategories, category)
+	}
+
 }
 
 func renderError(c *gin.Context, originalErr error) {

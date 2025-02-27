@@ -5,6 +5,7 @@ import styles from "./dashboard.module.scss";
 import { set } from "immer/dist/internal";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import StaticTable from "../Table/StaticTable";
 
 
 
@@ -37,9 +38,18 @@ const BudgetSetup = () => {
   const [payFrequencies, setPayFrequencies] = useState([{id: 1, name: "Weekly"}, {id: 2, name: "Bi-Weekly"}, {id: 3, name: "Monthly"}]);
   const [payFrequency, setPayFrequency] = useState(2);
   const [allocatedAmt, setAllocatedAmt] = useState(0);
-  const [needs, setNeeds] = useState([{ id: 1, name: "", amount: 0, category: ""}]);
-  const [wants, setWants] = useState([{ id: 1, name: "", amount: 0, category: ""}]);
-  const [debts, setDebts] = useState([{ id: 1, name: "", amount: 0, category: ""}]);
+  const [needs, setNeeds] = useState([{ id: 1, name: "", amount: "", category: ""}]);
+  const [wants, setWants] = useState([{ id: 1, name: "", amount: "", category: ""}]);
+  const [debts, setDebts] = useState([{ id: 1, name: "", amount: "", category: ""}]);
+  const [totalNeedsPct, setTotalNeedsPct] = useState(0);
+  const [totalNeedsAmt, setTotalNeedsAmt] = useState("");
+  const [totalWantsPct, setTotalWantsPct] = useState(0);
+  const [totalWantsAmt, setTotalWantsAmt] = useState("");
+  const [allocatedPct, setAllocatedPct] = useState(0);
+  const [totalDebtsPct, setTotalDebtsPct] = useState(0);
+  const [totalDebtsAmt, setTotalDebtsAmt] = useState("");
+  const [totalSavingsPct, setTotalSavingsPct] = useState(0);
+  const [totalSavingsAmt, setTotalSavingsAmt] = useState("");
   
 
   const { dispatch, sessionToken } =
@@ -70,12 +80,14 @@ const BudgetSetup = () => {
        return amount.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
    }
 
-   const formatCurrency = (amount: string) => {
+   const formatCurrency = (amount: string):string => {
+
+    if (amount === "") {
+      return "";
+    }
 
     if (amount.indexOf(".") > 0) {
-        if (amount === "") {
-          return;
-        }
+       
 
         var decimal_pos = amount.indexOf(".");
 
@@ -94,19 +106,26 @@ const BudgetSetup = () => {
         amount = "$" + amount;
       }
 
-     setMonthlyIncome({value: amount});
+     //setMonthlyIncome({value: amount});
+
+     return amount
    }
 
    const transformData = (data: any) => {
       var categories
        categories = data.map((category: any) => {
+        var categoryName = category.hierarchy.at(-1);
 
-        var categoryName = category.hierarchy.join(" > ") 
+        if (category.hierarchy.length > 1) {
+          categoryName =categoryName + " - " + category.hierarchy.at(-2);
+        }
           return {
             key: category.category_id,
             description: categoryName,
           }
         })
+
+        categories.sort((a: any , b: any)=> a.description.localeCompare(b.description));
 
       return categories
    }
@@ -114,22 +133,84 @@ const BudgetSetup = () => {
 
    const reconvertToCurrency = (amount: string = "$0.00"): number => {
 
+    if (typeof amount !== 'string') {
+      console.error(`Expected a string but received ${typeof amount}`);
+      return 0.00;
+    }
+
       var cleanedString = amount.replace(/[$,\s]/g, '');
-      console.log("CLEANED STRING", cleanedString)
+      // Return 0 if the cleaned string is empty
+      if (cleanedString === "") {
+        return 0.00;
+      }
       // Use parseFloat to convert the cleaned string to a number
       const number = parseFloat(cleanedString);
-      console.log("NUMBER", number)
       return number;
    }
 
-   const getAllocatedPct = () => {
 
-      var totalAllocated = needs.reduce((total, need) => total + need.amount, 0) + debts.reduce((total, debt) => total + debt.amount, 0) + wants.reduce((total, want) => total + want.amount, 0);
-      console.log("TOTAL ALLOCATED", totalAllocated)
-      return (totalAllocated/reconvertToCurrency(monthlyIncome.value)) * 100;
+   const updateMonthlyIncome = (incomeAmt: string) => { 
+        setMonthlyIncome({value: formatCurrency(incomeAmt)});
    }
 
 
+      const calculatePercentages = (totalNeeds: number, totalWants: number, totalDebts: number, income: number, totalAllocated: number) => {
+        //const reconvertedValue = reconvertToCurrency(monthlyIncome.value);
+
+        if(income === 0) {
+          setAllocatedPct(0);
+          setTotalNeedsPct(0);
+          setTotalWantsPct(0) ;
+          setTotalDebtsPct(0);
+          setTotalSavingsPct(0);
+          return
+        }
+
+       // const totalAllocated = needs.reduce((total, need) => total + reconvertToCurrency(need.amount), 0) + debts.reduce((total, debt) => total + reconvertToCurrency(debt.amount), 0) + wants.reduce((total, want) => total + reconvertToCurrency(want.amount), 0);
+
+        const allocatedPct = (totalAllocated/income) * 100;
+        setAllocatedPct(parseFloat(allocatedPct.toFixed(2)));
+
+        const totalNeedsPct = (totalNeeds / income) * 100;
+        setTotalNeedsPct(parseFloat(totalNeedsPct.toFixed(2)));
+
+        const totalWantsPct = (totalWants / income) * 100;
+        setTotalWantsPct(parseFloat(totalWantsPct.toFixed(2)));
+      
+        const totalDebtsPct = (totalDebts / income) * 100;
+        setTotalDebtsPct(parseFloat(totalDebtsPct.toFixed(2)));
+
+        const totalSavingsPct = ((income - totalAllocated) / income) * 100;
+        setTotalSavingsPct(parseFloat(totalSavingsPct.toFixed(2)));
+
+      }
+
+      const calculateAmts =  (totalNeeds: number, totalWants: number, totalDebts: number, income: number, totalAllocated: number) => {
+          
+        
+        setTotalNeedsAmt(formatCurrency(totalNeeds.toString()));
+        setTotalWantsAmt(formatCurrency(totalWants.toString()));
+        setTotalDebtsAmt(formatCurrency(totalDebts.toString()));
+
+        var remainingAmt = income - totalAllocated;
+        console.log("income in calc amts", income)
+        console.log("remaining amt", remainingAmt)
+        setTotalSavingsAmt(formatCurrency(remainingAmt.toString()));
+
+      }
+
+      useEffect(() => {
+
+        var totalNeeds = needs.reduce((total, need) => total + reconvertToCurrency(need.amount), 0);
+        var totalWants = wants.reduce((total, want) => total + reconvertToCurrency(want.amount), 0);
+        var totalDebts = debts.reduce((total, debt) => total + reconvertToCurrency(debt.amount), 0);
+        var totalIncome = reconvertToCurrency(monthlyIncome.value);
+        var totalAllocated = needs.reduce((total, need) => total + reconvertToCurrency(need.amount), 0) + debts.reduce((total, debt) => total + reconvertToCurrency(debt.amount), 0) + wants.reduce((total, want) => total + reconvertToCurrency(want.amount), 0);
+        calculatePercentages(totalNeeds, totalWants, totalDebts, totalIncome, totalAllocated);
+        calculateAmts(totalNeeds, totalWants, totalDebts, totalIncome, totalAllocated)
+      }, [needs, wants, debts, monthlyIncome]);
+
+   
 
    const handleSave = () => {
     console.log("INCOME", monthlyIncome)
@@ -158,12 +239,30 @@ const BudgetSetup = () => {
       const init = async () => {
         const categories = await getCategories();
         console.log("CATEGORIES", categories) 
-        setCategories(transformData(categories));
-        setPayFrequency(2);
-        setNeeds([{ id: 1, name: "", amount: 0, category: categories[0].category_id}]);
-        setWants([{ id: 1, name: "", amount: 0, category: categories[0].category_id}]);
-        setDebts([{ id: 1, name: "", amount: 0, category: categories[0].category_id}]); 
 
+        if (categories === undefined) {
+            toast.error('Error Fetching Categories!', 
+            {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Bounce,
+            }
+          );
+        } else {
+          setCategories(transformData(categories));
+          setPayFrequency(2);
+          setNeeds([{ id: 1, name: "", amount: "", category: categories[0].category_id}]);
+          setWants([{ id: 1, name: "", amount: "", category: categories[0].category_id}]);
+          setDebts([{ id: 1, name: "", amount: "", category: categories[0].category_id}]); 
+        }
+      
+       
       } 
 
       init();
@@ -181,11 +280,11 @@ const BudgetSetup = () => {
           <div className={styles.row}>
             <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
               <label>Monthly Income</label>
-              <input type="text" placeholder="$1,000,000" onChange={(e)=>{formatCurrency((e.target as HTMLInputElement).value)}} value={monthlyIncome.value} className={styles.inputIncome}/>
+              <input type="text" placeholder="$5,000" onChange={(e)=>{updateMonthlyIncome(e.target.value)}} value={monthlyIncome.value} className={styles.inputIncome}/>
             </div>
             <div className={`${styles['col-lg-3']}`}>
-                <label>Total Allocation</label>
-                <p>{getAllocatedPct()}%</p>
+                <label>Total Non-Savings Allocation</label>
+                <p>{allocatedPct}%</p>
             </div>
             <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
               <label>Pay Frequency</label>
@@ -201,16 +300,20 @@ const BudgetSetup = () => {
         <div>
           <h3>Income Allocation</h3>
           <hr />
-          <h4>Needs</h4>
-          <ExpandableTable categories={categories} fields={needs} setFields={setNeeds}/>
+          <h4>Needs <span>{totalNeedsPct}%</span></h4>
+          <ExpandableTable categories={categories} fields={needs} setFields={setNeeds} formatCurrency={formatCurrency} subtotal={totalNeedsAmt}/>
           <br />
           <hr />
-          <h4>Debt Repayment</h4>
-          <ExpandableTable categories={categories} fields={debts} setFields={setDebts}/>
+          <h4>Debt Repayment <span>{totalDebtsPct}%</span></h4>
+          <ExpandableTable categories={categories} fields={debts} setFields={setDebts} formatCurrency={formatCurrency} subtotal={totalDebtsAmt}/>
           <br />
           <hr />
-          <h4>Wants</h4>
-          <ExpandableTable categories={categories} fields={wants} setFields={setWants}/>
+          <h4>Wants <span>{totalWantsPct}%</span></h4>
+          <ExpandableTable categories={categories} fields={wants} setFields={setWants} formatCurrency={formatCurrency} subtotal={totalWantsAmt}/>
+          <br />
+          <hr />
+          <h4>Savings <span>{totalSavingsPct}%</span></h4>
+          <StaticTable fields={{headings: ["Name", "Amount"], rows: [{columns: ["Savings", totalSavingsAmt]}]}} />
           <br />
           <hr />
           <div>

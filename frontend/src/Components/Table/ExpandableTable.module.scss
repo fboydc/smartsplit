@@ -1,3 +1,12 @@
+.subTotalRow > td{
+  background-color: #D8D8D8;
+  padding: 0px 10px;
+}
+
+.subTotalRow > td > p {
+  font-size: 0.9em;
+  font-weight: bold;
+}
 table {
   border-collapse: collapse;
   margin: 25px 0;
