@@ -112,7 +112,7 @@ const BudgetSetup = () => {
    }
 
    const transformData = (data: any) => {
-      var categories
+     /* var categories
        categories = data.map((category: any) => {
         var categoryName = category.hierarchy.at(-1);
 
@@ -123,11 +123,11 @@ const BudgetSetup = () => {
             key: category.category_id,
             description: categoryName,
           }
-        })
+        })*/
 
-        categories.sort((a: any , b: any)=> a.description.localeCompare(b.description));
+        data.sort((a: any , b: any)=> a.name.localeCompare(b.name));
 
-      return categories
+      return data
    }
 
 
@@ -213,11 +213,15 @@ const BudgetSetup = () => {
    
 
    const handleSave = () => {
-    console.log("INCOME", monthlyIncome)
+    /*console.log("INCOME", monthlyIncome)
     console.log("PAY FREQUENCY", payFrequency)
     console.log("NEEDS", needs)
     console.log("DEBTS", debts)
-    console.log("WANTS", wants)
+    console.log("WANTS", wants)*/
+
+    
+
+
     toast.success('🤘 Budget Saved!', {
       position: "top-right",
       autoClose: 5000,
@@ -257,9 +261,9 @@ const BudgetSetup = () => {
         } else {
           setCategories(transformData(categories));
           setPayFrequency(2);
-          setNeeds([{ id: 1, name: "", amount: "", category: categories[0].category_id}]);
-          setWants([{ id: 1, name: "", amount: "", category: categories[0].category_id}]);
-          setDebts([{ id: 1, name: "", amount: "", category: categories[0].category_id}]); 
+          setNeeds([{ id: 1, name: "", amount: "", category: categories[0].ID}]);
+          setWants([{ id: 1, name: "", amount: "", category: categories[0].ID}]);
+          setDebts([{ id: 1, name: "", amount: "", category: categories[0].ID}]); 
         }
       
        

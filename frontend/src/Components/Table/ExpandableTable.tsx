@@ -11,8 +11,8 @@ interface ExpandableTableProps {
 
 }
 interface Category {
-    key: number;
-    description: string;
+    id: number;
+    name: string;
 }
 
 const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, setFields, formatCurrency, subtotal }) => {
@@ -66,7 +66,7 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
                             <td>
                                 <select value={row.category} onChange={(e)=> handleChange(row.id, "category", e.target.value)}>
                                     {categories.map((category) => (
-                                        <option key ={category.key} value={category.key}>{category.description}</option>
+                                        <option key ={category.id} value={category.id}>{category.name}</option>
                                     ))}
                                 </select>
                             </td>

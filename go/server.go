@@ -38,16 +38,35 @@ var environments = map[string]plaid.Environment{
 
 // Category represents a category in the database
 type Category struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	PlaidId     string `json:"plaid_id"`
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type Expense struct {
+	Description    string  `json:"description"`
+	Amount         float64 `json:"amount"`
+	Category       string  `json:"category"`
+	AllocationType string  `json:"allocation_type"`
+}
+
+type Income struct {
+	Amount    float64 `json:"amount"`
+	Frequency string  `json:"frequency"`
 }
 
 // LoginRequest represents the login payload
 type loginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type saveBudgetRequest struct {
+	UserID int `json:"user_id"`
+}
+
+type getBudgetResponse struct {
+	Expenses []Expense `json:"expenses"`
+	Incomes  []Income  `json:"income"`
 }
 
 func init() {
@@ -149,6 +168,8 @@ func main() {
 		protected.GET("/api/cra/get_base_report", getCraBaseReportHandler)
 		protected.GET("/api/cra/get_income_insights", getCraIncomeInsightsHandler)
 		protected.GET("/api/cra/get_partner_insights", getCraPartnerInsightsHandler)
+		protected.POST("/api/save_budget", saveBudgetHandler)
+		protected.GET("/api/budget", getBudgetHandler)
 	}
 
 	err = r.Run(":" + APP_PORT)
@@ -225,7 +246,7 @@ func getPlaidCategories(c *gin.Context) {
 }
 
 func getCategories(c *gin.Context) {
-	rows, err := executeQuery("SELECT * FROM categories", DB)
+	rows, err := executeQuery(`SELECT "plaid_category_id", "category_name" FROM "Category"`, DB)
 	if err != nil {
 		renderError(c, err)
 	}
@@ -239,6 +260,10 @@ func getCategories(c *gin.Context) {
 		}
 		returnCategories = append(returnCategories, category)
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"categories": returnCategories,
+	})
 
 }
 
@@ -1047,3 +1072,145 @@ func pollWithRetries[T any](requestCallback func() (T, error), ms int, retriesLe
 	}
 	return response, nil
 }
+
+func saveBudgetHandler(c *gin.Context) {
+
+}
+
+func getBudgetHandler(c *gin.Context) {
+
+	user_id := c.Query("user_id")
+	if user_id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "User ID is required",
+		})
+		return
+	}
+
+	income_query := fmt.Sprintf(`SELECT "income_amount", "income_frequency" FROM "Income" WHERE "user_id" = %s`, user_id)
+
+	income_row, err := DB.Query(income_query)
+	if err != nil {
+
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "No income found for the given user ID",
+			})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal server error: Could not execute income query",
+			})
+
+		}
+
+		return
+	}
+
+	expenses_query := fmt.Sprintf(`SELECT "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses WHERE "user_id" = %s`, user_id)
+
+	expenses_row, err := DB.Query(expenses_query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal server error: Could not execute expenses query",
+		})
+		return
+	}
+
+	defer expenses_row.Close()
+	defer income_row.Close()
+
+	incomes := []Income{}
+	expenses := []Expense{}
+
+	for income_row.Next() {
+		var income Income
+		err = income_row.Scan(&income.Amount, &income.Frequency)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal server error: Could not scan income row",
+			})
+			return
+		}
+		incomes = append(incomes, income)
+
+	}
+
+	for expenses_row.Next() {
+		var expense Expense
+		err = expenses_row.Scan(&expense.Description, &expense.Amount, &expense.Category, &expense.AllocationType)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal server error: Could not scan expenses row",
+			})
+			return
+		}
+		expenses = append(expenses, expense)
+
+	}
+
+	for income_row.Next() {
+		var income Income
+		err = income_row.Scan(&income.Amount, &income.Frequency)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "Internal server error: Could not scan income row",
+			})
+			return
+		}
+		incomes = append(incomes, income)
+
+	}
+
+	getBudgetResponse := getBudgetResponse{
+		Incomes:  incomes,
+		Expenses: expenses,
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"budget": getBudgetResponse,
+	})
+
+}
+
+/*
+func getExpensesHandler(c *gin.Context) {
+	//var requestBody loginRequest
+	user_id := c.Query("user")
+	if user_id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "User ID is required",
+		})
+		return
+	}
+
+	query := fmt.Sprintf(`SELECT "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses WHERE "user_id" = %s`, user_id)
+
+	rows, err := executeQuery(query, DB)
+	if err != nil {
+		renderError(c, err)
+	}
+
+
+
+
+}*/
+
+/*
+func saveBudgetHandler(c *gin.Context) {
+	//var requestBody loginRequest
+	user := c.PostForm("user")
+	budget := c.PostForm("budget")
+
+	ok, err := saveBudget(user, budget, DB)
+	if err != nil {
+		renderError(c, err)
+		return
+	}
+
+	if ok {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Budget saved successfully",
+		})
+	}
+}
+*/

@@ -46,6 +46,17 @@ CREATE TABLE IF NOT EXISTS "Expenses" (
 );
 
 
+CREATE TABLE IF NOT EXISTS "Income" (
+  "income_id" SERIAL PRIMARY KEY,
+  "income_description" varchar(255) NOT NULL,
+  "income_amount" decimal NOT NULL,
+  "income_frequency" varchar(255) NOT NULL,
+  "user_id" integer NOT NULL REFERENCES "Users"("user_id"),
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
 
 
 INSERT INTO "Users" ("username", "email", "password_hash") VALUES ('admin', 'admin@smartsplit.com', '$2a$10$nLavVuPde6DTLfHwkoxKkOOYfUt/QZrIg2Uq0W5HcyetavCl7ND12');
@@ -70,6 +81,8 @@ INSERT INTO "Category" ("plaid_category_id","category_name","category_descriptio
 INSERT INTO "Category" ("plaid_category_id","category_name","category_description") VALUES ('18030000', 'Insurance', 'Insurance, Services');
 INSERT INTO "Category" ("plaid_category_id","category_name","category_description") VALUES ('19006000', 'Pharmacy', 'Pharmacy, Health');
 
+
+INSERT INTO "Income" ("income_description", "income_amount", "user_id", "income_frequency") VALUES ('Salary', 5000, 1, 'Semi-Monthly');
 
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('Rent', 1500, 1, 1, 1);
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('FPL', 100, 2, 1, 1);

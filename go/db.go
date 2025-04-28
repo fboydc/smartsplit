@@ -19,3 +19,11 @@ func InitDB() (*sql.DB, error) {
 func CloseDB(db *sql.DB) {
 	db.Close()
 }
+
+func executeQuery(query string, db *sql.DB) (*sql.Rows, error) {
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
