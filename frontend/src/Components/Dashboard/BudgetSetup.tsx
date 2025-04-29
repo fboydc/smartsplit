@@ -74,7 +74,20 @@ const BudgetSetup = () => {
 
    }, [dispatch])
 
+   const getExpenses = useCallback(async () => {
+    const response = await fetch("/api/budget", {method: "GET",headers: {
+        "Content-Type": "application/json",
+        "Authorization": sessionToken,
+      }
+    })
 
+    
+
+
+  }, [dispatch])
+
+
+    
    const formatNumber = (amount: string) => {
        //return number.replace
        return amount.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")

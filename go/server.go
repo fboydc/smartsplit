@@ -37,6 +37,13 @@ var environments = map[string]plaid.Environment{
 }
 
 // Category represents a category in the database
+
+type Allocation struct {
+	AllocationType        string  `json:"allocation_type"`
+	AllocationDescription string  `json:"allocation_description"`
+	AllocationFactor      float64 `json:"allocation_factor"`
+}
+
 type Category struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
@@ -65,8 +72,9 @@ type saveBudgetRequest struct {
 }
 
 type getBudgetResponse struct {
-	Expenses []Expense `json:"expenses"`
-	Incomes  []Income  `json:"income"`
+	Expenses    []Expense    `json:"expenses"`
+	Incomes     []Income     `json:"income"`
+	Allocations []Allocation `json:"allocations"`
 }
 
 func init() {
@@ -1106,7 +1114,7 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
-	expenses_query := fmt.Sprintf(`SELECT "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses WHERE "user_id" = %s`, user_id)
+	expenses_query := fmt.Sprintf(`SELECT "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses" WHERE "user_id" = %s`, user_id)
 
 	expenses_row, err := DB.Query(expenses_query)
 	if err != nil {
@@ -1116,11 +1124,23 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
+	allocations_query := fmt.Sprintf(`SELECT "allocation_type", "allocation_description", "allocation_factor" FROM "Allocations" WHERE "user_id" = %s`, user_id)
+
+	allocations_row, err := DB.Query(allocations_query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Internal server error: Could not execute allocations query",
+		})
+		return
+	}
+
 	defer expenses_row.Close()
 	defer income_row.Close()
+	defer allocations_row.Close()
 
 	incomes := []Income{}
 	expenses := []Expense{}
+	allocations := []Allocation{}
 
 	for income_row.Next() {
 		var income Income
@@ -1148,22 +1168,23 @@ func getBudgetHandler(c *gin.Context) {
 
 	}
 
-	for income_row.Next() {
-		var income Income
-		err = income_row.Scan(&income.Amount, &income.Frequency)
+	for allocations_row.Next() {
+		var allocation Allocation
+		err = allocations_row.Scan(&allocation.AllocationType, &allocation.AllocationDescription, &allocation.AllocationFactor)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "Internal server error: Could not scan income row",
+				"message": "Internal server error: Could not scan allocations row",
 			})
 			return
 		}
-		incomes = append(incomes, income)
+		allocations = append(allocations, allocation)
 
 	}
 
 	getBudgetResponse := getBudgetResponse{
-		Incomes:  incomes,
-		Expenses: expenses,
+		Incomes:     incomes,
+		Expenses:    expenses,
+		Allocations: allocations,
 	}
 
 	c.JSON(http.StatusOK, gin.H{

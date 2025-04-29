@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS "Users" (
 CREATE TABLE IF NOT EXISTS "Allocations" (
   "allocation_type" SERIAL PRIMARY KEY,
   "allocation_description" varchar(255) NOT NULL,
-  "allocation_factor" decimal NOT NULL
+  "allocation_factor" decimal NOT NULL,
+  "user_id" integer NOT NULL REFERENCES "Users"("user_id")
 );
 
 CREATE TABLE IF NOT EXISTS "Category" (
@@ -61,9 +62,9 @@ CREATE TABLE IF NOT EXISTS "Income" (
 
 INSERT INTO "Users" ("username", "email", "password_hash") VALUES ('admin', 'admin@smartsplit.com', '$2a$10$nLavVuPde6DTLfHwkoxKkOOYfUt/QZrIg2Uq0W5HcyetavCl7ND12');
 
-INSERT INTO "Allocations" ("allocation_description", "allocation_factor") VALUES ('Needs', 0.5);
-INSERT INTO "Allocations" ("allocation_description", "allocation_factor") VALUES ('Debts and Repayment', 0.2);
-INSERT INTO "Allocations" ("allocation_description", "allocation_factor") VALUES ('Wants', 0.3);
+INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Needs', 0.5, 1);
+INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Debts and Repayment', 0.2, 1);
+INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Wants', 0.3, 1);
 
 INSERT INTO "Category" ("plaid_category_id","category_name","category_description") VALUES ('16002000','Rent','Payment, Rent');
 INSERT INTO "Category" ("plaid_category_id","category_name","category_description") VALUES ('18068005','Utilities','Electric, Utilities');
