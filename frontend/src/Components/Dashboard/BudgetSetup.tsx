@@ -53,6 +53,7 @@ const BudgetSetup = () => {
   const [totalSavingsPct, setTotalSavingsPct] = useState(0);
   const [totalSavingsAmt, setTotalSavingsAmt] = useState("");
   
+  
 
   const { dispatch, sessionToken } =
   useContext(Context);
@@ -276,17 +277,22 @@ const BudgetSetup = () => {
       })
   } 
 
-/*
-  const filterExpensesByAllocationType = (expenses: Expense[], allocationType: string): [] => {
-    return expenses.filter((expense) => expense.allocation_type === allocationType);
-  }*/
 
 
   // This function should organize expenses by allocations and set the state for this component 
-  const orderExpensesByAllications = (allocations: Allocation[], expenses: Expense[]) => {
+  const orderExpensesByAllocations = (allocations: Allocation[], expenses: Expense[]) => {  
 
 
+    
+    expenses.forEach((expense) => {
 
+      allocations.forEach((allocation) => {
+        if (expense.allocation_type === allocation.type) {
+          
+        }
+      })
+   
+    })
 
   }
 
