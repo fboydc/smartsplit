@@ -6,6 +6,8 @@ import { set } from "immer/dist/internal";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import StaticTable from "../Table/StaticTable";
+import { Expense, Income, Allocation } from "../../models/types";
+
 
 
 
@@ -63,9 +65,9 @@ const BudgetSetup = () => {
       }
     })
 
-    console.log("RESPONSE", response)
     if (!response.ok) {
-      //NEED TO HANDLE ERROR
+        console.error("Error fetching categories:", response.statusText);
+        return undefined;
     }
 
     const data = await response.json();
@@ -74,14 +76,23 @@ const BudgetSetup = () => {
 
    }, [dispatch])
 
-   const getExpenses = useCallback(async () => {
+   const getDashboardInfo = useCallback(async () => {
     const response = await fetch("/api/budget", {method: "GET",headers: {
         "Content-Type": "application/json",
         "Authorization": sessionToken,
       }
     })
 
-    
+    console.log("RESPONSE - Budget", response)
+
+    if (!response.ok) {
+        console.error("Error fetching budget:", response.statusText);
+        return undefined;
+    }
+
+    const data = await response.json();
+
+    return data.budget;
 
 
   }, [dispatch])
@@ -125,21 +136,7 @@ const BudgetSetup = () => {
    }
 
    const transformData = (data: any) => {
-     /* var categories
-       categories = data.map((category: any) => {
-        var categoryName = category.hierarchy.at(-1);
-
-        if (category.hierarchy.length > 1) {
-          categoryName =categoryName + " - " + category.hierarchy.at(-2);
-        }
-          return {
-            key: category.category_id,
-            description: categoryName,
-          }
-        })*/
-
         data.sort((a: any , b: any)=> a.name.localeCompare(b.name));
-
       return data
    }
 
@@ -226,11 +223,7 @@ const BudgetSetup = () => {
    
 
    const handleSave = () => {
-    /*console.log("INCOME", monthlyIncome)
-    console.log("PAY FREQUENCY", payFrequency)
-    console.log("NEEDS", needs)
-    console.log("DEBTS", debts)
-    console.log("WANTS", wants)*/
+  
 
     
 
@@ -250,12 +243,58 @@ const BudgetSetup = () => {
 
 
 
+  const createExpenses = (responseExpenseData: any): Expense[] => {
+     return responseExpenseData.map((expense: any) => {
+        return {
+          id: expense.id,
+          description: expense.description,
+          amount: expense.amount,
+          category: expense.category,
+          allocation_type: expense.allocation_type,
+        }
+      })
+  }
+   
+
+  const createIncomes = (responseIncomeData: any): Income[] => {
+    return responseIncomeData.map((income: any) => {
+      return {
+        id: income.id,
+        amount: income.amount,
+        frequency: income.frequency,
+      };
+    });
+  };
+
+  const createAllocations = (responseAllocationData: any): Allocation[] => {
+    return responseAllocationData.map((allocation: any) => {
+        return {
+          type: allocation.allocation_type,
+          description: allocation.allocation_description,
+          factor: allocation.allocation_factor,
+        }
+      })
+  } 
+
+/*
+  const filterExpensesByAllocationType = (expenses: Expense[], allocationType: string): [] => {
+    return expenses.filter((expense) => expense.allocation_type === allocationType);
+  }*/
+
+
+  // This function should organize expenses by allocations and set the state for this component 
+  const orderExpensesByAllications = (allocations: Allocation[], expenses: Expense[]) => {
+
+
+
+
+  }
 
 
     useEffect(()=> {
       const init = async () => {
         const categories = await getCategories();
-        console.log("CATEGORIES", categories) 
+        const budget = await getDashboardInfo();
 
         if (categories === undefined) {
             toast.error('Error Fetching Categories!', 
@@ -279,7 +318,35 @@ const BudgetSetup = () => {
           setDebts([{ id: 1, name: "", amount: "", category: categories[0].ID}]); 
         }
       
-       
+        if (budget === undefined) {
+            toast.error('Error Fetching Budget!', 
+            {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Bounce,
+            }
+          );
+        } else {
+          const incomes = createIncomes(budget.incomes);
+          const expenses = createExpenses(budget.expenses);
+          const allocations = createAllocations(budget.allocations);
+
+          //Should call filter expenses by allocations here
+
+          setPayFrequency(budget.pay_frequency);
+          setNeeds(budget.needs.map((need: any) => ({ id: need.ID, name: need.name, amount: formatCurrency(need.amount), category: need.category})));
+          setWants(budget.wants.map((want: any) => ({ id: want.ID, name: want.name, amount: formatCurrency(want.amount), category: want.category})));
+          setDebts(budget.debts.map((debt: any) => ({ id: debt.ID, name: debt.name, amount: formatCurrency(debt.amount), category: debt.category})));
+
+          dispatch({ type: "SET_STATE", state: { incomes: incomes, expenses: expenses, allocations: allocations }});
+        }
+        
       } 
 
       init();

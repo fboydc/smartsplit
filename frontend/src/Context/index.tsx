@@ -1,7 +1,11 @@
 import { createContext, useReducer, Dispatch, ReactNode, useEffect } from "react";
+import { Expense, Income, Allocation } from "../models/types";
 
 interface QuickstartState {
+  expenses: Expense[];
+  allocations: Allocation[];
   linkSuccess: boolean;
+  incomes: Income[];
   isItemAccess: boolean;
   isPaymentInitiation: boolean;
   isUserTokenFlow: boolean;
@@ -27,6 +31,9 @@ interface QuickstartState {
 }
 
 const initialState: QuickstartState = {
+  expenses: [],
+  incomes: [],
+  allocations: [],
   linkSuccess: false,
   isItemAccess: true,
   isPaymentInitiation: false,
@@ -51,6 +58,7 @@ const initialState: QuickstartState = {
   user: null,
   sessionToken: ""
 };
+
 
 type QuickstartAction = {
   type: "SET_STATE";
@@ -84,19 +92,6 @@ export const QuickstartProvider: React.FC<{ children: ReactNode }> = (
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  /*
-  const login = (user: string) => {
-      dispatch({ type: "SET_STATE", state: { isAuthenticated: true, user: user } });
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", user);
-  }
-
-  const logout = () => {
-    dispatch({ type: "SET_STATE", state: { isAuthenticated: false } });
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
-  }
-*/
 
   const checkIfSessionExists = () => {
     // Need to implement this function

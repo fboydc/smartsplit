@@ -39,6 +39,7 @@ var environments = map[string]plaid.Environment{
 // Category represents a category in the database
 
 type Allocation struct {
+	Id                    int     `json:"id"`
 	AllocationType        string  `json:"allocation_type"`
 	AllocationDescription string  `json:"allocation_description"`
 	AllocationFactor      float64 `json:"allocation_factor"`
@@ -50,6 +51,7 @@ type Category struct {
 }
 
 type Expense struct {
+	Id             int     `json:"id"`
 	Description    string  `json:"description"`
 	Amount         float64 `json:"amount"`
 	Category       string  `json:"category"`
@@ -57,6 +59,7 @@ type Expense struct {
 }
 
 type Income struct {
+	Id        int     `json:"id"`
 	Amount    float64 `json:"amount"`
 	Frequency string  `json:"frequency"`
 }
@@ -73,7 +76,7 @@ type saveBudgetRequest struct {
 
 type getBudgetResponse struct {
 	Expenses    []Expense    `json:"expenses"`
-	Incomes     []Income     `json:"income"`
+	Incomes     []Income     `json:"incomes"`
 	Allocations []Allocation `json:"allocations"`
 }
 
@@ -1095,7 +1098,7 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
-	income_query := fmt.Sprintf(`SELECT "income_amount", "income_frequency" FROM "Income" WHERE "user_id" = %s`, user_id)
+	income_query := fmt.Sprintf(`SELECT "income_id", "income_amount", "income_frequency" FROM "Income" WHERE "user_id" = %s`, user_id)
 
 	income_row, err := DB.Query(income_query)
 	if err != nil {
@@ -1114,7 +1117,7 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
-	expenses_query := fmt.Sprintf(`SELECT "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses" WHERE "user_id" = %s`, user_id)
+	expenses_query := fmt.Sprintf(`SELECT "expense_id", "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses" WHERE "user_id" = %s`, user_id)
 
 	expenses_row, err := DB.Query(expenses_query)
 	if err != nil {
@@ -1144,7 +1147,7 @@ func getBudgetHandler(c *gin.Context) {
 
 	for income_row.Next() {
 		var income Income
-		err = income_row.Scan(&income.Amount, &income.Frequency)
+		err = income_row.Scan(&income.Id, &income.Amount, &income.Frequency)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Internal server error: Could not scan income row",
@@ -1157,7 +1160,7 @@ func getBudgetHandler(c *gin.Context) {
 
 	for expenses_row.Next() {
 		var expense Expense
-		err = expenses_row.Scan(&expense.Description, &expense.Amount, &expense.Category, &expense.AllocationType)
+		err = expenses_row.Scan(&expense.Id, &expense.Description, &expense.Amount, &expense.Category, &expense.AllocationType)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "Internal server error: Could not scan expenses row",
@@ -1183,8 +1186,8 @@ func getBudgetHandler(c *gin.Context) {
 
 	getBudgetResponse := getBudgetResponse{
 		Incomes:     incomes,
-		Expenses:    expenses,
 		Allocations: allocations,
+		Expenses:    expenses,
 	}
 
 	c.JSON(http.StatusOK, gin.H{
