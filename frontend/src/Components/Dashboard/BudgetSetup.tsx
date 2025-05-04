@@ -6,7 +6,7 @@ import { set } from "immer/dist/internal";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import StaticTable from "../Table/StaticTable";
-import { Expense, Income, Allocation } from "../../models/types";
+import { Expense, Income, Allocation, AllocationGroup } from "../../models/types";
 
 
 
@@ -52,10 +52,10 @@ const BudgetSetup = () => {
   const [totalDebtsAmt, setTotalDebtsAmt] = useState("");
   const [totalSavingsPct, setTotalSavingsPct] = useState(0);
   const [totalSavingsAmt, setTotalSavingsAmt] = useState("");
-  
+
   
 
-  const { dispatch, sessionToken } =
+  const { dispatch, sessionToken, user } =
   useContext(Context);
 
 
@@ -78,7 +78,7 @@ const BudgetSetup = () => {
    }, [dispatch])
 
    const getDashboardInfo = useCallback(async () => {
-    const response = await fetch("/api/budget", {method: "GET",headers: {
+    const response = await fetch("/api/budget?user_id="+user, {method: "GET",headers: {
         "Content-Type": "application/json",
         "Authorization": sessionToken,
       }
@@ -277,24 +277,30 @@ const BudgetSetup = () => {
       })
   } 
 
+  const createAllocationGroups = (allocations: Allocation[], expenses: Expense[]): AllocationGroup[] => {
+    const allocationGroups: AllocationGroup[] = [];
 
+    allocations.forEach((allocation) => {
+      const group: AllocationGroup = {
+        allocation_type: allocation.description,
+        allocation_total: 0,
+        allocation_pct: 0,
+        expenses: [],
+      };
 
-  // This function should organize expenses by allocations and set the state for this component 
-  const orderExpensesByAllocations = (allocations: Allocation[], expenses: Expense[]) => {  
-
-
-    
-    expenses.forEach((expense) => {
-
-      allocations.forEach((allocation) => {
+      expenses.forEach((expense) => {
         if (expense.allocation_type === allocation.type) {
-          
+          group.allocation_total += expense.amount;
+          group.expenses.push(expense);
         }
-      })
-   
-    })
+      });
 
+      allocationGroups.push(group);
+    });
+
+    return allocationGroups;
   }
+
 
 
     useEffect(()=> {
@@ -342,6 +348,9 @@ const BudgetSetup = () => {
           const incomes = createIncomes(budget.incomes);
           const expenses = createExpenses(budget.expenses);
           const allocations = createAllocations(budget.allocations);
+          const allocationGroups = createAllocationGroups(allocations, expenses);
+          console.log("Allocation Groups", allocationGroups);
+
 
           //Should call filter expenses by allocations here
 

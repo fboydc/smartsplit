@@ -20,7 +20,7 @@ export interface Expense {
   }
 
   export interface AllocationGroup {
-    allocation_name: string;
+    allocation_type: string;
     allocation_total: number;
     allocation_pct: number;
     expenses: Expense[];
