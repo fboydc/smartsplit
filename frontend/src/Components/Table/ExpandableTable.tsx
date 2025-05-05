@@ -5,7 +5,7 @@ import { format } from 'path';
 interface ExpandableTableProps {
     categories: Category[];
     fields: any[];
-    setFields: React.Dispatch<React.SetStateAction<{id: number; name: string; amount: string; category: string; }[]>>;
+    setFields: React.Dispatch<React.SetStateAction<any[]>>;
     formatCurrency: (value: string) => string;
     subtotal: string;
 
@@ -18,9 +18,8 @@ interface Category {
 const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, setFields, formatCurrency, subtotal }) => {
    
 
+    console.log("Categories: " + JSON.stringify(categories));
 
-    
-    
     const addRow = ({name, amount, categoryId}: {name: string, amount: string, categoryId: string}) => {
         const newRow = { id: fields.length + 1, name: name, amount: amount, category: categoryId };
         setFields([...fields, newRow]);
@@ -58,16 +57,19 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
                     {fields.map((row) => (
                         <tr key={row.id}>
                             <td>
-                                <input type="text" value={row.name} onChange={(e)=> handleChange(row.id, "name", e.target.value)}/>
+                                <input type="text" value={row.description} onChange={(e)=> handleChange(row.id, "name", e.target.value)}/>
                             </td>
                             <td>
                                  <input type="text" value={row.amount} onChange={(e)=> handleChange(row.id, "amount", e.target.value)}/>
                             </td>
                             <td>
-                                <select value={row.category} onChange={(e)=> handleChange(row.id, "category", e.target.value)}>
-                                    {categories.map((category) => (
-                                        <option key ={category.id} value={category.id}>{category.name}</option>
-                                    ))}
+
+                                <select value={row.category || "" } onChange={(e)=> handleChange(row.id, "category", e.target.value)}>
+                                {categories.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
                                 </select>
                             </td>
                             <td>

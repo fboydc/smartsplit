@@ -6,6 +6,7 @@ interface QuickstartState {
   allocations: Allocation[];
   linkSuccess: boolean;
   incomes: Income[];
+  totalIncome: number; 
   isItemAccess: boolean;
   isPaymentInitiation: boolean;
   isUserTokenFlow: boolean;
@@ -26,6 +27,7 @@ interface QuickstartState {
     error_code: string;
   }
   isAuthenticated: boolean;
+  user_id: string | null;
   user: string | null;
   sessionToken: string;
 }
@@ -33,6 +35,7 @@ interface QuickstartState {
 const initialState: QuickstartState = {
   expenses: [],
   incomes: [],
+  totalIncome: 0,
   allocations: [],
   linkSuccess: false,
   isItemAccess: true,
@@ -55,6 +58,7 @@ const initialState: QuickstartState = {
     error_code: "",
   },
   isAuthenticated: false,
+  user_id: null,
   user: null,
   sessionToken: ""
 };

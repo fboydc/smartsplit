@@ -65,6 +65,7 @@ INSERT INTO "Users" ("username", "email", "password_hash") VALUES ('admin', 'adm
 INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Needs', 0.5, 1);
 INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Debts and Repayment', 0.2, 1);
 INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Wants', 0.3, 1);
+INSERT INTO "Allocations" ("allocation_description", "allocation_factor", "user_id") VALUES ('Savings', 0.0, 1);
 
 INSERT INTO "Category" ("plaid_category_id","category_name","category_description") VALUES ('16002000','Rent','Payment, Rent');
 INSERT INTO "Category" ("plaid_category_id","category_name","category_description") VALUES ('18068005','Utilities','Electric, Utilities');

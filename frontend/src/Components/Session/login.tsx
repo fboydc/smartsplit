@@ -27,11 +27,11 @@ const Login = () => {
         });
         if (response.ok) {
             const data = await response.json();
-            console.log("Data returned: "+ data);
+            console.log("Data returned: "+ JSON.stringify(data));
             if (data.plaidToken) {
-                dispatch({ type: "SET_STATE", state: { user: user, isAuthenticated: true, sessionToken: data.token, accessToken: data.plaidToken, linkSuccess: true }});
+                dispatch({ type: "SET_STATE", state: { user_id: data.user_id, user: data.username, isAuthenticated: true, sessionToken: data.token, accessToken: data.plaidToken, linkSuccess: true }});
             } else {
-                dispatch({ type: "SET_STATE", state: { user: user, isAuthenticated: true, sessionToken: data.token }});
+                dispatch({ type: "SET_STATE", state: { user_id: data.user_id, user: data.username, isAuthenticated: true, sessionToken: data.token }});
             }
 
             navigate("/");

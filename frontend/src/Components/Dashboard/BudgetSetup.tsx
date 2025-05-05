@@ -43,6 +43,7 @@ const BudgetSetup = () => {
   const [needs, setNeeds] = useState([{ id: 1, name: "", amount: "", category: ""}]);
   const [wants, setWants] = useState([{ id: 1, name: "", amount: "", category: ""}]);
   const [debts, setDebts] = useState([{ id: 1, name: "", amount: "", category: ""}]);
+  const [allocGroup, setAllocGroup] = useState<AllocationGroup[]>([]);
   const [totalNeedsPct, setTotalNeedsPct] = useState(0);
   const [totalNeedsAmt, setTotalNeedsAmt] = useState("");
   const [totalWantsPct, setTotalWantsPct] = useState(0);
@@ -55,7 +56,7 @@ const BudgetSetup = () => {
 
   
 
-  const { dispatch, sessionToken, user } =
+  const { dispatch, sessionToken, user_id, totalIncome } =
   useContext(Context);
 
 
@@ -78,13 +79,13 @@ const BudgetSetup = () => {
    }, [dispatch])
 
    const getDashboardInfo = useCallback(async () => {
-    const response = await fetch("/api/budget?user_id="+user, {method: "GET",headers: {
+    const response = await fetch("/api/budget?user_id="+user_id, {method: "GET",headers: {
         "Content-Type": "application/json",
         "Authorization": sessionToken,
       }
     })
 
-    console.log("RESPONSE - Budget", response)
+  
 
     if (!response.ok) {
         console.error("Error fetching budget:", response.statusText);
@@ -92,6 +93,8 @@ const BudgetSetup = () => {
     }
 
     const data = await response.json();
+    console.log("RESPONSE - Budget", JSON.stringify(data))
+    
 
     return data.budget;
 
@@ -161,7 +164,9 @@ const BudgetSetup = () => {
 
 
    const updateMonthlyIncome = (incomeAmt: string) => { 
-        setMonthlyIncome({value: formatCurrency(incomeAmt)});
+        //setMonthlyIncome({value: formatCurrency(incomeAmt)});
+        dispatch({ type: "SET_STATE", state: { totalIncome: reconvertToCurrency(incomeAmt) }});
+
    }
 
 
@@ -209,7 +214,7 @@ const BudgetSetup = () => {
         setTotalSavingsAmt(formatCurrency(remainingAmt.toString()));
 
       }
-
+      /*
       useEffect(() => {
 
         var totalNeeds = needs.reduce((total, need) => total + reconvertToCurrency(need.amount), 0);
@@ -219,7 +224,7 @@ const BudgetSetup = () => {
         var totalAllocated = needs.reduce((total, need) => total + reconvertToCurrency(need.amount), 0) + debts.reduce((total, debt) => total + reconvertToCurrency(debt.amount), 0) + wants.reduce((total, want) => total + reconvertToCurrency(want.amount), 0);
         calculatePercentages(totalNeeds, totalWants, totalDebts, totalIncome, totalAllocated);
         calculateAmts(totalNeeds, totalWants, totalDebts, totalIncome, totalAllocated)
-      }, [needs, wants, debts, monthlyIncome]);
+      }, [needs, wants, debts, monthlyIncome]);*/
 
    
 
@@ -277,14 +282,16 @@ const BudgetSetup = () => {
       })
   } 
 
-  const createAllocationGroups = (allocations: Allocation[], expenses: Expense[]): AllocationGroup[] => {
+  const createAllocationGroups = (allocations: Allocation[], expenses: Expense[], income_total: number): AllocationGroup[] => {
     const allocationGroups: AllocationGroup[] = [];
+    var allocatedAmt = 0;
 
     allocations.forEach((allocation) => {
       const group: AllocationGroup = {
         allocation_type: allocation.description,
         allocation_total: 0,
         allocation_pct: 0,
+        current_allocation: 0,
         expenses: [],
       };
 
@@ -295,11 +302,34 @@ const BudgetSetup = () => {
         }
       });
 
+      group.allocation_pct = (group.allocation_total / income_total) * 100;
+      allocatedAmt += group.allocation_total;
+
       allocationGroups.push(group);
     });
 
+    const savingAllocations: AllocationGroup = {
+      allocation_type: "Savings",
+      allocation_total: income_total - allocatedAmt,
+      allocation_pct: ((income_total - allocatedAmt)/ income_total) * 100,
+      current_allocation: 0,
+      expenses: [],
+    }
+
+    const savingsBucket: Expense = {
+      id: expenses[expenses.length-1].id + 1,
+      description: "Expense Bucket",
+      amount: 0,
+      category: "Expense Bucket",
+      allocation_type: 3,
+    };
+
+    allocationGroups.push(savingAllocations);
+
     return allocationGroups;
   }
+
+
 
 
 
@@ -348,18 +378,23 @@ const BudgetSetup = () => {
           const incomes = createIncomes(budget.incomes);
           const expenses = createExpenses(budget.expenses);
           const allocations = createAllocations(budget.allocations);
-          const allocationGroups = createAllocationGroups(allocations, expenses);
+
+          const income_total = incomes.reduce((total, income) => total + income.amount, 0);
+          const allocationGroups = createAllocationGroups(allocations, expenses, income_total);
           console.log("Allocation Groups", allocationGroups);
+
+          setAllocGroup(allocationGroups);
 
 
           //Should call filter expenses by allocations here
 
           setPayFrequency(budget.pay_frequency);
-          setNeeds(budget.needs.map((need: any) => ({ id: need.ID, name: need.name, amount: formatCurrency(need.amount), category: need.category})));
-          setWants(budget.wants.map((want: any) => ({ id: want.ID, name: want.name, amount: formatCurrency(want.amount), category: want.category})));
-          setDebts(budget.debts.map((debt: any) => ({ id: debt.ID, name: debt.name, amount: formatCurrency(debt.amount), category: debt.category})));
 
-          dispatch({ type: "SET_STATE", state: { incomes: incomes, expenses: expenses, allocations: allocations }});
+          /*setNeeds(budget.needs.map((need: any) => ({ id: need.ID, name: need.name, amount: formatCurrency(need.amount), category: need.category})));
+          setWants(budget.wants.map((want: any) => ({ id: want.ID, name: want.name, amount: formatCurrency(want.amount), category: want.category})));
+          setDebts(budget.debts.map((debt: any) => ({ id: debt.ID, name: debt.name, amount: formatCurrency(debt.amount), category: debt.category})));*/
+
+          dispatch({ type: "SET_STATE", state: { incomes: incomes, totalIncome: income_total, expenses: expenses, allocations: allocations }});
         }
         
       } 
@@ -379,7 +414,7 @@ const BudgetSetup = () => {
           <div className={styles.row}>
             <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
               <label>Monthly Income</label>
-              <input type="text" placeholder="$5,000" onChange={(e)=>{updateMonthlyIncome(e.target.value)}} value={monthlyIncome.value} className={styles.inputIncome}/>
+              <input type="text" placeholder="$5,000" onChange={(e)=>{updateMonthlyIncome(e.target.value)}} value={formatCurrency(totalIncome.toString())} className={styles.inputIncome}/>
             </div>
             <div className={`${styles['col-lg-3']}`}>
                 <label>Total Non-Savings Allocation</label>
@@ -399,17 +434,14 @@ const BudgetSetup = () => {
         <div>
           <h3>Income Allocation</h3>
           <hr />
-          <h4>Needs <span>{totalNeedsPct}%</span></h4>
-          <ExpandableTable categories={categories} fields={needs} setFields={setNeeds} formatCurrency={formatCurrency} subtotal={totalNeedsAmt}/>
-          <br />
-          <hr />
-          <h4>Debt Repayment <span>{totalDebtsPct}%</span></h4>
-          <ExpandableTable categories={categories} fields={debts} setFields={setDebts} formatCurrency={formatCurrency} subtotal={totalDebtsAmt}/>
-          <br />
-          <hr />
-          <h4>Wants <span>{totalWantsPct}%</span></h4>
-          <ExpandableTable categories={categories} fields={wants} setFields={setWants} formatCurrency={formatCurrency} subtotal={totalWantsAmt}/>
-          <br />
+              {
+                allocGroup.map((group, index) => (
+                  <div key={index}>
+                    <h4>{group.allocation_type} <span>{group.allocation_pct}%</span></h4>
+                    <ExpandableTable categories={categories} fields={group.expenses} setFields={setAllocGroup} formatCurrency={formatCurrency} subtotal={formatCurrency(group.allocation_total.toString())}/>
+                  </div>
+                ))
+              }
           <hr />
           <h4>Savings <span>{totalSavingsPct}%</span></h4>
           <StaticTable fields={{headings: ["Name", "Amount"], rows: [{columns: ["Savings", totalSavingsAmt]}]}} />

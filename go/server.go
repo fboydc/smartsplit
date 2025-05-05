@@ -238,6 +238,8 @@ func loginHandler(c *gin.Context) {
 		"message":    "Login successful",
 		"token":      token,
 		"plaidToken": plaidToken,
+		"user_id":    userid,
+		"username":   uname,
 	})
 
 }
@@ -257,7 +259,7 @@ func getPlaidCategories(c *gin.Context) {
 }
 
 func getCategories(c *gin.Context) {
-	rows, err := executeQuery(`SELECT "plaid_category_id", "category_name" FROM "Category"`, DB)
+	rows, err := executeQuery(`SELECT "category_id", "category_name" FROM "Category"`, DB)
 	if err != nil {
 		renderError(c, err)
 	}
@@ -1195,46 +1197,3 @@ func getBudgetHandler(c *gin.Context) {
 	})
 
 }
-
-/*
-func getExpensesHandler(c *gin.Context) {
-	//var requestBody loginRequest
-	user_id := c.Query("user")
-	if user_id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "User ID is required",
-		})
-		return
-	}
-
-	query := fmt.Sprintf(`SELECT "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses WHERE "user_id" = %s`, user_id)
-
-	rows, err := executeQuery(query, DB)
-	if err != nil {
-		renderError(c, err)
-	}
-
-
-
-
-}*/
-
-/*
-func saveBudgetHandler(c *gin.Context) {
-	//var requestBody loginRequest
-	user := c.PostForm("user")
-	budget := c.PostForm("budget")
-
-	ok, err := saveBudget(user, budget, DB)
-	if err != nil {
-		renderError(c, err)
-		return
-	}
-
-	if ok {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Budget saved successfully",
-		})
-	}
-}
-*/
