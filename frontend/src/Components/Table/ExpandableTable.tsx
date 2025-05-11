@@ -1,11 +1,22 @@
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import styles from "./ExpandableTable.module.scss";
 import { format } from 'path';
+import {AllocationGroup, Expense } from "../../models/types";
 
-interface ExpandableTableProps {
-    categories: Category[];
-    fields: any[];
-    setFields: React.Dispatch<React.SetStateAction<any[]>>;
+
+interface ColumnDefinition<T> {
+    field: keyof T;
+    header: string;
+    inputType: "text" | "select"
+    options?: { value: string; label: string }[];
+
+}
+
+
+interface ExpandableTableProps<T> {
+    fields: T[];
+    setFields: React.Dispatch<React.SetStateAction<T[]>>;
+    columns: ColumnDefinition<T>[];
     formatCurrency: (value: string) => string;
     subtotal: string;
 
@@ -14,14 +25,19 @@ interface Category {
     id: number;
     name: string;
 }
-
-const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, setFields, formatCurrency, subtotal }) => {
+const ExpandableTable = <T extends { id: number }>({
+    fields,
+    setFields,
+    columns,
+    formatCurrency,
+    subtotal,
+}: ExpandableTableProps<T>)=> {
    
 
-    console.log("Categories: " + JSON.stringify(categories));
+    const addRow = () => {
 
-    const addRow = ({name, amount, categoryId}: {name: string, amount: string, categoryId: string}) => {
-        const newRow = { id: fields.length + 1, name: name, amount: amount, category: categoryId };
+        //var row: Expense = {id: fields.length + 1, name: name, amount: amount, category: categoryId}
+        const newRow = { id: fields.length + 1 } as T;
         setFields([...fields, newRow]);
     }
 
@@ -30,15 +46,19 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
         setFields(newRows);
     }
     
-    const handleChange = (id: number, field: string, value: string) => {
+    const handleChange = (id: number, field: keyof T, value: string) => {
 
         if (field === "amount") {
            value =  formatCurrency(value);
         }
 
-        setFields(
-            fields.map((row) => (row.id === id ? { ...row, [field]: value } : row))
-        )
+        setFields( Object.values(fields).map((row) => {
+                if (row.id === id) {
+                    return { ...row, [field]: value }
+                } 
+                return row;
+            }
+        ));
 
     }
    
@@ -53,8 +73,11 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
                         <th></th>
                     </tr>
                 </thead>
+                
                 <tbody>
-                    {fields.map((row) => (
+                    {/*}
+                    {console.log("fields: " + JSON.stringify(fields))}
+                    {fields && fields.map((row) => (
                         <tr key={row.id}>
                             <td>
                                 <input type="text" value={row.description} onChange={(e)=> handleChange(row.id, "name", e.target.value)}/>
@@ -91,6 +114,7 @@ const ExpandableTable: React.FC<ExpandableTableProps> = ({ categories, fields, s
                         </td>
                         <td />
                     </tr>
+                    */}
                 </tbody>
             </table>
         </div>

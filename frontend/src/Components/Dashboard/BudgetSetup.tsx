@@ -318,12 +318,13 @@ const BudgetSetup = () => {
 
     const savingsBucket: Expense = {
       id: expenses[expenses.length-1].id + 1,
-      description: "Expense Bucket",
-      amount: 0,
+      description: "Savings Bucket",
+      amount: income_total - allocatedAmt,
       category: "Expense Bucket",
       allocation_type: 3,
     };
 
+    savingAllocations.expenses.push(savingsBucket);
     allocationGroups.push(savingAllocations);
 
     return allocationGroups;
@@ -414,7 +415,7 @@ const BudgetSetup = () => {
           <div className={styles.row}>
             <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
               <label>Monthly Income</label>
-              <input type="text" placeholder="$5,000" onChange={(e)=>{updateMonthlyIncome(e.target.value)}} value={formatCurrency(totalIncome.toString())} className={styles.inputIncome}/>
+              <input type="text" placeholder="$5,000" onChange={(e)=>{updateMonthlyIncome(e.target.value)}} value={formatCurrency(totalIncome + "")} className={styles.inputIncome}/>
             </div>
             <div className={`${styles['col-lg-3']}`}>
                 <label>Total Non-Savings Allocation</label>
@@ -438,7 +439,7 @@ const BudgetSetup = () => {
                 allocGroup.map((group, index) => (
                   <div key={index}>
                     <h4>{group.allocation_type} <span>{group.allocation_pct}%</span></h4>
-                    <ExpandableTable categories={categories} fields={group.expenses} setFields={setAllocGroup} formatCurrency={formatCurrency} subtotal={formatCurrency(group.allocation_total.toString())}/>
+                    {/*<ExpandableTable categories={categories} fields={group.expenses} setFields={setAllocGroup} formatCurrency={formatCurrency} subtotal={formatCurrency(group.allocation_total + "")}/>*/}
                   </div>
                 ))
               }

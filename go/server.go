@@ -1100,7 +1100,7 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
-	income_query := fmt.Sprintf(`SELECT "income_id", "income_amount", "income_frequency" FROM "Income" WHERE "user_id" = %s`, user_id)
+	income_query := fmt.Sprintf(`SELECT "income_id", "income_amount", "income_frequency" FROM "Income" WHERE "user_id" = '%s'`, user_id)
 
 	income_row, err := DB.Query(income_query)
 	if err != nil {
@@ -1119,7 +1119,7 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
-	expenses_query := fmt.Sprintf(`SELECT "expense_id", "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses" WHERE "user_id" = %s`, user_id)
+	expenses_query := fmt.Sprintf(`SELECT "expense_id", "expense_description", "expense_amount", "expense_category", "allocation_type" FROM "Expenses" WHERE "user_id" = '%s'`, user_id)
 
 	expenses_row, err := DB.Query(expenses_query)
 	if err != nil {
@@ -1129,7 +1129,7 @@ func getBudgetHandler(c *gin.Context) {
 		return
 	}
 
-	allocations_query := fmt.Sprintf(`SELECT "allocation_type", "allocation_description", "allocation_factor" FROM "Allocations" WHERE "user_id" = %s`, user_id)
+	allocations_query := fmt.Sprintf(`SELECT "allocation_type", "allocation_description", "allocation_factor" FROM "Allocations" WHERE "user_id" = '%s'`, user_id)
 
 	allocations_row, err := DB.Query(allocations_query)
 	if err != nil {
