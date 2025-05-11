@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	plaid "github.com/plaid/plaid-go/v31/plaid"
 )
@@ -39,29 +40,29 @@ var environments = map[string]plaid.Environment{
 // Category represents a category in the database
 
 type Allocation struct {
-	Id                    int     `json:"id"`
-	AllocationType        string  `json:"allocation_type"`
-	AllocationDescription string  `json:"allocation_description"`
-	AllocationFactor      float64 `json:"allocation_factor"`
+	Id                    uuid.UUID `json:"id"`
+	AllocationType        string    `json:"allocation_type"`
+	AllocationDescription string    `json:"allocation_description"`
+	AllocationFactor      float64   `json:"allocation_factor"`
 }
 
 type Category struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Name string    `json:"name"`
 }
 
 type Expense struct {
-	Id             int     `json:"id"`
-	Description    string  `json:"description"`
-	Amount         float64 `json:"amount"`
-	Category       string  `json:"category"`
-	AllocationType string  `json:"allocation_type"`
+	Id             uuid.UUID `json:"id"`
+	Description    string    `json:"description"`
+	Amount         float64   `json:"amount"`
+	Category       string    `json:"category"`
+	AllocationType string    `json:"allocation_type"`
 }
 
 type Income struct {
-	Id        int     `json:"id"`
-	Amount    float64 `json:"amount"`
-	Frequency string  `json:"frequency"`
+	Id        uuid.UUID `json:"id"`
+	Amount    float64   `json:"amount"`
+	Frequency string    `json:"frequency"`
 }
 
 // LoginRequest represents the login payload
@@ -71,7 +72,7 @@ type loginRequest struct {
 }
 
 type saveBudgetRequest struct {
-	UserID int `json:"user_id"`
+	UserID string `json:"user_id"`
 }
 
 type getBudgetResponse struct {
