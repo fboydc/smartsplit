@@ -54,6 +54,8 @@ const BudgetSetup = () => {
   const [totalSavingsPct, setTotalSavingsPct] = useState(0);
   const [totalSavingsAmt, setTotalSavingsAmt] = useState("");
 
+
+
   
 
   const { dispatch, sessionToken, user_id, totalIncome } =
@@ -244,6 +246,22 @@ const BudgetSetup = () => {
       progress: undefined,
       theme: "light",
       transition: Bounce,
+      });
+   }
+
+
+   const handleUpdateExpenses = (groupIndex: number, updatedExpenses: Expense[]) => { 
+
+      setAllocGroup((prevAllocGroup) => {
+        const updatedAllocGroup = [...prevAllocGroup];
+        updatedAllocGroup[groupIndex] =  {
+          ...updatedAllocGroup[groupIndex],
+          expenses: updatedExpenses,
+          allocation_total: updatedExpenses.reduce((total, expense) => total + expense.amount, 0),
+          allocation_pct: (updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / reconvertToCurrency(monthlyIncome.value)) * 100,
+
+        }
+        return updatedAllocGroup;
       });
    }
 
@@ -439,7 +457,13 @@ const BudgetSetup = () => {
                 allocGroup.map((group, index) => (
                   <div key={index}>
                     <h4>{group.allocation_type} <span>{group.allocation_pct}%</span></h4>
-                    {/*<ExpandableTable categories={categories} fields={group.expenses} setFields={setAllocGroup} formatCurrency={formatCurrency} subtotal={formatCurrency(group.allocation_total + "")}/>*/}
+                    <ExpandableTable 
+                      categories={categories} 
+                      fields={group.expenses} 
+                      setFields={(updatedExpenses)=> handleUpdateExpenses(index, updatedExpenses)} 
+                      formatCurrency={formatCurrency}
+                      subtotal={formatCurrency(group.allocation_total + "")}
+                      />
                   </div>
                 ))
               }

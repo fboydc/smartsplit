@@ -2,57 +2,44 @@ import React, { useEffect, useState, ChangeEvent } from 'react';
 import styles from "./ExpandableTable.module.scss";
 import { format } from 'path';
 import {AllocationGroup, Expense } from "../../models/types";
+import { v4 as uuidv4} from 'uuid';
 
 
-interface ColumnDefinition<T> {
-    field: keyof T;
-    header: string;
-    inputType: "text" | "select"
-    options?: { value: string; label: string }[];
 
-}
-
-
-interface ExpandableTableProps<T> {
-    fields: T[];
-    setFields: React.Dispatch<React.SetStateAction<T[]>>;
-    columns: ColumnDefinition<T>[];
-    formatCurrency: (value: string) => string;
-    subtotal: string;
-
-}
-interface Category {
-    id: number;
-    name: string;
-}
-const ExpandableTable = <T extends { id: number }>({
+const ExpandableTable = <T extends { id: string }>({
     fields,
     setFields,
-    columns,
+    categories,
     formatCurrency,
     subtotal,
-}: ExpandableTableProps<T>)=> {
+}: {
+    fields: T[];
+    setFields: (updatedFields: T[]) => void;
+    categories: { id: string; name: string }[];
+    formatCurrency: (value: string) => string;
+    subtotal: string;
+})=> {
    
 
     const addRow = () => {
 
         //var row: Expense = {id: fields.length + 1, name: name, amount: amount, category: categoryId}
-        const newRow = { id: fields.length + 1 } as T;
+        const newRow = { id: uuidv4(), description: "", amount: 0, category: "" } as unknown as T;
         setFields([...fields, newRow]);
     }
 
-    const removeRow = (id: number) => {
+    const removeRow = (id: string) => {
         const newRows = fields.filter((row) => row.id !== id);
         setFields(newRows);
     }
     
-    const handleChange = (id: number, field: keyof T, value: string) => {
+    const handleChange = (id: string, field: keyof T, value: string) => {
 
         if (field === "amount") {
            value =  formatCurrency(value);
         }
 
-        setFields( Object.values(fields).map((row) => {
+        setFields(fields.map((row) => {
                 if (row.id === id) {
                     return { ...row, [field]: value }
                 } 
