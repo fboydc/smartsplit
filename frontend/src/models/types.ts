@@ -3,7 +3,7 @@ export interface Expense {
     description: string;
     amount: number;
     category: string;
-    allocation_type: number;
+    allocation_type: string;
   }
   
   export interface Income {
@@ -14,7 +14,7 @@ export interface Expense {
   }
   
   export interface Allocation {
-    type: number;
+    type: string;
     description: string;
     factor: number;
   }

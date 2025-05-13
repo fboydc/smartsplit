@@ -7,6 +7,7 @@ import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import StaticTable from "../Table/StaticTable";
 import { Expense, Income, Allocation, AllocationGroup } from "../../models/types";
+import { v4 as uuidv4} from 'uuid';
 
 
 
@@ -339,7 +340,7 @@ const BudgetSetup = () => {
       description: "Savings Bucket",
       amount: income_total - allocatedAmt,
       category: "Expense Bucket",
-      allocation_type: 3,
+      allocation_type: "savings-" + uuidv4(),
     };
 
     savingAllocations.expenses.push(savingsBucket);

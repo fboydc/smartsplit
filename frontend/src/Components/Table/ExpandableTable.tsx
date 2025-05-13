@@ -5,26 +5,36 @@ import {AllocationGroup, Expense } from "../../models/types";
 import { v4 as uuidv4} from 'uuid';
 
 
+interface ExpandableTableProps {
+  fields: Expense[]; // Array of Expense objects
+  setFields: (updatedFields: Expense[]) => void; // Function to update the fields
+  categories: { id: string; name: string }[]; // List of categories for the dropdown
+  formatCurrency: (value: string) => string; // Function to format currency
+  subtotal: string; // Subtotal to display
+}
 
-const ExpandableTable = <T extends { id: string }>({
+
+const ExpandableTable: React.FC<ExpandableTableProps> =({
     fields,
     setFields,
     categories,
     formatCurrency,
     subtotal,
-}: {
-    fields: T[];
-    setFields: (updatedFields: T[]) => void;
-    categories: { id: string; name: string }[];
-    formatCurrency: (value: string) => string;
-    subtotal: string;
-})=> {
+}) => {
    
 
     const addRow = () => {
 
         //var row: Expense = {id: fields.length + 1, name: name, amount: amount, category: categoryId}
-        const newRow = { id: uuidv4(), description: "", amount: 0, category: "" } as unknown as T;
+        
+          const newRow: Expense = {
+                id: uuidv4(),
+                description: "",
+                amount: 0,
+                category: "",
+                allocation_type: "", // Default value for allocation_type
+           };
+
         setFields([...fields, newRow]);
     }
 
@@ -33,19 +43,17 @@ const ExpandableTable = <T extends { id: string }>({
         setFields(newRows);
     }
     
-    const handleChange = (id: string, field: keyof T, value: string) => {
+    const handleChange = (id: string, field: keyof Expense, value: string) => {
 
-        if (field === "amount") {
-           value =  formatCurrency(value);
-        }
-
-        setFields(fields.map((row) => {
-                if (row.id === id) {
-                    return { ...row, [field]: value }
-                } 
-                return row;
+        const updatedFields = fields.map((row) =>
+        row.id === id
+            ? {
+                ...row,
+                [field]: field === "amount" ? parseFloat(value) || 0 : value,
             }
-        ));
+            : row
+    );
+    setFields(updatedFields);
 
     }
    
@@ -62,7 +70,32 @@ const ExpandableTable = <T extends { id: string }>({
                 </thead>
                 
                 <tbody>
-                    {/*}
+                    {
+
+                        fields && fields.map((row) => (
+                            <tr key={row.id}>
+                                <td>
+                                    <input type="text" value={row.description} onChange={(e)=> handleChange(row.id, "description", e.target.value)}/>
+                                </td>
+                                <td>
+                                     <input type="text" value={row.amount} onChange={(e)=> handleChange(row.id, "amount", e.target.value)}/>
+                                </td>
+                                <td>
+
+                                    <select value={row.category || "" } onChange={(e)=> handleChange(row.id, "category", e.target.value)}>
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button className={styles.tableButton} onClick={() => removeRow(row.id)}>Remove</button>
+                                </td>
+                            </tr>
+                        ))
+                    /*}
                     {console.log("fields: " + JSON.stringify(fields))}
                     {fields && fields.map((row) => (
                         <tr key={row.id}>
