@@ -253,13 +253,14 @@ const BudgetSetup = () => {
 
    const handleUpdateExpenses = (groupIndex: number, updatedExpenses: Expense[]) => { 
 
+
       setAllocGroup((prevAllocGroup) => {
         const updatedAllocGroup = [...prevAllocGroup];
         updatedAllocGroup[groupIndex] =  {
           ...updatedAllocGroup[groupIndex],
           expenses: updatedExpenses,
           allocation_total: updatedExpenses.reduce((total, expense) => total + expense.amount, 0),
-          allocation_pct: (updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / reconvertToCurrency(monthlyIncome.value)) * 100,
+          allocation_pct: (updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / totalIncome) * 100,
 
         }
         return updatedAllocGroup;
@@ -409,11 +410,6 @@ const BudgetSetup = () => {
           //Should call filter expenses by allocations here
 
           setPayFrequency(budget.pay_frequency);
-
-          /*setNeeds(budget.needs.map((need: any) => ({ id: need.ID, name: need.name, amount: formatCurrency(need.amount), category: need.category})));
-          setWants(budget.wants.map((want: any) => ({ id: want.ID, name: want.name, amount: formatCurrency(want.amount), category: want.category})));
-          setDebts(budget.debts.map((debt: any) => ({ id: debt.ID, name: debt.name, amount: formatCurrency(debt.amount), category: debt.category})));*/
-
           dispatch({ type: "SET_STATE", state: { incomes: incomes, totalIncome: income_total, expenses: expenses, allocations: allocations }});
         }
         
@@ -469,8 +465,6 @@ const BudgetSetup = () => {
                 ))
               }
           <hr />
-          <h4>Savings <span>{totalSavingsPct}%</span></h4>
-          <StaticTable fields={{headings: ["Name", "Amount"], rows: [{columns: ["Savings", totalSavingsAmt]}]}} />
           <br />
           <hr />
           <div>
