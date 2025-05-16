@@ -253,7 +253,7 @@ const BudgetSetup = () => {
 
    const handleUpdateExpenses = (groupIndex: number, updatedExpenses: Expense[]) => { 
 
-
+      
       setAllocGroup((prevAllocGroup) => {
         const updatedAllocGroup = [...prevAllocGroup];
         updatedAllocGroup[groupIndex] =  {
@@ -265,8 +265,27 @@ const BudgetSetup = () => {
         }
         return updatedAllocGroup;
       });
+
+      setAllocatedPct(updateTotalAllocation());
+
    }
 
+
+   const updateTotalAllocation = (): number => {
+
+      var total = 0.0;
+      var pct = 0.0;
+      allocGroup.forEach((group) => {
+        total =  total + group.allocation_total;
+      })
+
+      console.log("Income", totalIncome);
+
+      console.log("alloc total", total); 
+      pct = (total / totalIncome) * 100;
+      console.log("Allocated pct", pct);
+      return pct;
+   }
 
 
   const createExpenses = (responseExpenseData: any): Expense[] => {
@@ -336,7 +355,7 @@ const BudgetSetup = () => {
       expenses: [],
     }
 
-    const savingsBucket: Expense = {
+  /*  const savingsBucket: Expense = {
       id: expenses[expenses.length-1].id + 1,
       description: "Savings Bucket",
       amount: income_total - allocatedAmt,
@@ -345,7 +364,7 @@ const BudgetSetup = () => {
     };
 
     savingAllocations.expenses.push(savingsBucket);
-    allocationGroups.push(savingAllocations);
+    allocationGroups.push(savingAllocations);*/
 
     return allocationGroups;
   }
@@ -405,10 +424,10 @@ const BudgetSetup = () => {
           console.log("Allocation Groups", allocationGroups);
 
           setAllocGroup(allocationGroups);
-
+          setAllocatedPct(updateTotalAllocation());
 
           //Should call filter expenses by allocations here
-
+          
           setPayFrequency(budget.pay_frequency);
           dispatch({ type: "SET_STATE", state: { incomes: incomes, totalIncome: income_total, expenses: expenses, allocations: allocations }});
         }

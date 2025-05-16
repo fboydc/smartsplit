@@ -65,9 +65,9 @@ CREATE TABLE IF NOT EXISTS "Income" (
 INSERT INTO "Users" ("user_id", "username", "email", "password_hash") VALUES ('ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'admin', 'admin@smartsplit.com', '$2a$10$nLavVuPde6DTLfHwkoxKkOOYfUt/QZrIg2Uq0W5HcyetavCl7ND12');
 
 INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('9f3c76e9-9d43-4480-a56d-a176b783f24d', 'Needs', 0.5, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
-INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('ac184cdf-b7ff-4eb9-b757-628770d566fb', 'Debts and Repayment', 0.2, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
+INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('ac184cdf-b7ff-4eb9-b757-628770d566fb', 'Debts and Repayment', 0.1, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
 INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('f981f988-5be8-4a9b-bb39-392dd646ddbd', 'Wants', 0.3, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
-INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('184906a8-94f8-459e-b654-88e42d246579', 'Savings', 0.0, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
+INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('184906a8-94f8-459e-b654-88e42d246579', 'Savings', 0.1, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
 
 INSERT INTO "Category" ("category_id", "plaid_category_id","category_name","category_description") VALUES ('1ae53e57-8b82-45f2-a8cd-94d43932ab54', '16002000','Rent','Payment, Rent');
 INSERT INTO "Category" ("category_id", "plaid_category_id","category_name","category_description") VALUES ('c2f89cdc-5ff7-46fc-92b3-f14bbdec7404', '18068005','Utilities','Electric, Utilities');
