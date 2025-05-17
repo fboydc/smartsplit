@@ -46,6 +46,7 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
     const handleChange = (id: string, field: keyof Expense, value: string) => {
 
         console.log("value: " + value); 
+        console.log("converted value: " + parseFloat(value));
 
         const updatedFields = fields.map((row) =>
         row.id === id
@@ -96,7 +97,9 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
                                     <button className={styles.tableButton} onClick={() => removeRow(row.id)}>Remove</button>
                                 </td>
                             </tr>
+                         
                         ))
+
                     /*}
                     {console.log("fields: " + JSON.stringify(fields))}
                     {fields && fields.map((row) => (
@@ -137,6 +140,21 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
                         <td />
                     </tr>
                     */}
+                    
+                       <tr className={styles.subTotalRow}>
+                            <td>
+                                <p>Sub-Total</p>
+                            </td>
+                            <td colSpan={6}>
+                                <p>{subtotal}</p>
+                            </td>
+                        </tr>
+                         <tr>
+                            <td colSpan={3}>
+                                <button className={styles.tableButton} onClick={() => addRow()}>Add Row</button>
+                            </td>
+                            <td />
+                        </tr>
                 </tbody>
             </table>
         </div>
