@@ -21,7 +21,6 @@ const Header = () => {
     isPaymentInitiation,
   } = useContext(Context);
 
-  console.log("backend in header", backend);
   
 
   return (

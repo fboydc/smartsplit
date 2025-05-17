@@ -10,7 +10,7 @@ interface ExpandableTableProps {
   setFields: (updatedFields: Expense[]) => void; // Function to update the fields
   categories: { id: string; name: string }[]; // List of categories for the dropdown
   formatCurrency: (value: string) => string; // Function to format currency
-  subtotal: string; // Subtotal to display
+  subtotal: string; // Subtotal to display 
 }
 
 
@@ -44,6 +44,8 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
     }
     
     const handleChange = (id: string, field: keyof Expense, value: string) => {
+
+        console.log("value: " + value); 
 
         const updatedFields = fields.map((row) =>
         row.id === id

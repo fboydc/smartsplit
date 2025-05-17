@@ -16,7 +16,6 @@ const App = () => {
 
   const { isAuthenticated } = useContext(Context);
 
-  console.log("isAuthenticated", isAuthenticated);  
 
   return (
         <Routes>

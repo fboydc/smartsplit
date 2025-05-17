@@ -71,7 +71,6 @@ const BudgetSetup = () => {
     })
 
     if (!response.ok) {
-        console.error("Error fetching categories:", response.statusText);
         return undefined;
     }
 
@@ -91,7 +90,6 @@ const BudgetSetup = () => {
   
 
     if (!response.ok) {
-        console.error("Error fetching budget:", response.statusText);
         return undefined;
     }
 
@@ -168,6 +166,14 @@ const BudgetSetup = () => {
 
    const updateMonthlyIncome = (incomeAmt: string) => { 
         //setMonthlyIncome({value: formatCurrency(incomeAmt)});
+        //(updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / totalIncome) * 100
+        allocGroup.forEach((group) => {
+          group.allocation_pct = (group.allocation_total / reconvertToCurrency(incomeAmt)) * 100;
+        })
+
+        setAllocGroup(allocGroup);
+        setAllocatedPct(updateTotalAllocation(reconvertToCurrency(incomeAmt), allocGroup));
+
         dispatch({ type: "SET_STATE", state: { totalIncome: reconvertToCurrency(incomeAmt) }});
 
    }
@@ -254,35 +260,35 @@ const BudgetSetup = () => {
    const handleUpdateExpenses = (groupIndex: number, updatedExpenses: Expense[]) => { 
 
       
-      setAllocGroup((prevAllocGroup) => {
-        const updatedAllocGroup = [...prevAllocGroup];
-        updatedAllocGroup[groupIndex] =  {
-          ...updatedAllocGroup[groupIndex],
-          expenses: updatedExpenses,
-          allocation_total: updatedExpenses.reduce((total, expense) => total + expense.amount, 0),
-          allocation_pct: (updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / totalIncome) * 100,
+      const updatedAllocGroup = [...allocGroup];
+      updatedAllocGroup[groupIndex] = {
+        ...updatedAllocGroup[groupIndex],
+        expenses: updatedExpenses,
+        allocation_total: updatedExpenses.reduce((total, expense) => total + expense.amount, 0),
+        allocation_pct: (updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / totalIncome) * 100,
+      }
+       setAllocGroup(updatedAllocGroup);
 
-        }
-        return updatedAllocGroup;
-      });
 
-      setAllocatedPct(updateTotalAllocation());
+      setAllocatedPct(updateTotalAllocation(totalIncome, updatedAllocGroup));
 
    }
 
 
-   const updateTotalAllocation = (): number => {
+   const updateTotalAllocation = (total_income: number, allocation_groups: AllocationGroup[]): number => {
 
       var total = 0.0;
       var pct = 0.0;
-      allocGroup.forEach((group) => {
+      //console.log("alloc groups", allocGroup);
+      allocation_groups.forEach((group) => {
         total =  total + group.allocation_total;
       })
 
-      console.log("Income", totalIncome);
+      console.log("Income", total_income);
+      console.log("Total", total);
 
       console.log("alloc total", total); 
-      pct = (total / totalIncome) * 100;
+      pct = (total / total_income) * 100;
       console.log("Allocated pct", pct);
       return pct;
    }
@@ -369,6 +375,13 @@ const BudgetSetup = () => {
     return allocationGroups;
   }
 
+  const truncateDecimals = (number: number) => {
+
+    const decimalPlaces = 2;
+    const factor = Math.pow(10, decimalPlaces);
+    return Math.round(number * factor) / factor;
+  }
+
 
 
 
@@ -420,11 +433,12 @@ const BudgetSetup = () => {
           const allocations = createAllocations(budget.allocations);
 
           const income_total = incomes.reduce((total, income) => total + income.amount, 0);
+          console.log("Total Income", income_total);
           const allocationGroups = createAllocationGroups(allocations, expenses, income_total);
           console.log("Allocation Groups", allocationGroups);
 
           setAllocGroup(allocationGroups);
-          setAllocatedPct(updateTotalAllocation());
+          setAllocatedPct(updateTotalAllocation(income_total, allocationGroups));
 
           //Should call filter expenses by allocations here
           
@@ -453,7 +467,7 @@ const BudgetSetup = () => {
             </div>
             <div className={`${styles['col-lg-3']}`}>
                 <label>Total Non-Savings Allocation</label>
-                <p>{allocatedPct}%</p>
+                <p>{truncateDecimals(allocatedPct)}%</p>
             </div>
             <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
               <label>Pay Frequency</label>
@@ -472,7 +486,7 @@ const BudgetSetup = () => {
               {
                 allocGroup.map((group, index) => (
                   <div key={index}>
-                    <h4>{group.allocation_type} <span>{group.allocation_pct}%</span></h4>
+                    <h4>{group.allocation_type} <span>{truncateDecimals(group.allocation_pct)}%</span></h4>
                     <ExpandableTable 
                       categories={categories} 
                       fields={group.expenses} 
@@ -483,8 +497,6 @@ const BudgetSetup = () => {
                   </div>
                 ))
               }
-          <hr />
-          <br />
           <hr />
           <div>
             <button className={styles.tableButton} onClick={handleSave}>Save</button>
