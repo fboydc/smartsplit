@@ -259,13 +259,15 @@ const BudgetSetup = () => {
 
    const handleUpdateExpenses = (groupIndex: number, updatedExpenses: Expense[]) => { 
 
-      
+      console.log("Expenses", updatedExpenses);
+   
+      console.log("allocation_pct", (updatedExpenses.reduce((total, expense) => Number(total) + Number(expense.amount), 0) / totalIncome) * 100)
       const updatedAllocGroup = [...allocGroup];
       updatedAllocGroup[groupIndex] = {
         ...updatedAllocGroup[groupIndex],
         expenses: updatedExpenses,
-        allocation_total: updatedExpenses.reduce((total, expense) => total + expense.amount, 0),
-        allocation_pct: (updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / totalIncome) * 100,
+        allocation_total: updatedExpenses.reduce((total, expense) => total + Number(expense.amount), 0),
+        allocation_pct: (updatedExpenses.reduce((total, expense) => total + Number(expense.amount), 0) / totalIncome) * 100,
       }
        setAllocGroup(updatedAllocGroup);
 
@@ -282,10 +284,12 @@ const BudgetSetup = () => {
       //console.log("alloc groups", allocGroup);
       allocation_groups.forEach((group) => {
         total =  total + group.allocation_total;
+        console.log("current group", group.allocation_type);
+        console.log("current group total", group.allocation_total);
       })
 
-      console.log("Income", total_income);
-      console.log("Total", total);
+      console.log("Income", truncateDecimals(total_income));
+      console.log("Total", truncateDecimals(total));
 
       console.log("alloc total", total); 
       pct = (total / total_income) * 100;
@@ -376,7 +380,7 @@ const BudgetSetup = () => {
   }
 
   const truncateDecimals = (number: number) => {
-
+    console.log("number before truncating:" + number)
     const decimalPlaces = 2;
     const factor = Math.pow(10, decimalPlaces);
     return Math.round(number * factor) / factor;

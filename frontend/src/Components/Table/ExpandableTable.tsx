@@ -42,17 +42,23 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
         const newRows = fields.filter((row) => row.id !== id);
         setFields(newRows);
     }
+
+    const isValidNumber = (value: string) => {
+        const numberRegex = /^\d*\.?\d*$/
+        return numberRegex.test(value);
+    }
     
     const handleChange = (id: string, field: keyof Expense, value: string) => {
 
-        console.log("value: " + value); 
-        console.log("converted value: " + parseFloat(value));
+        if (field === "amount" && !isValidNumber(value)) {
+            return
+        }
 
         const updatedFields = fields.map((row) =>
         row.id === id
             ? {
                 ...row,
-                [field]: field === "amount" ? parseFloat(value) || 0 : value,
+                [field]: value,
             }
             : row
     );
