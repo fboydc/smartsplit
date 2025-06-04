@@ -284,16 +284,8 @@ const BudgetSetup = () => {
       //console.log("alloc groups", allocGroup);
       allocation_groups.forEach((group) => {
         total =  total + group.allocation_total;
-        console.log("current group", group.allocation_type);
-        console.log("current group total", group.allocation_total);
       })
-
-      console.log("Income", truncateDecimals(total_income));
-      console.log("Total", truncateDecimals(total));
-
-      console.log("alloc total", total); 
       pct = (total / total_income) * 100;
-      console.log("Allocated pct", pct);
       return pct;
    }
 
