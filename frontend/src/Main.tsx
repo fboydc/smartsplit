@@ -74,6 +74,7 @@ const Main = () => {
 
   const generateToken = useCallback(
     async (isPaymentInitiation) => {
+
       // Link tokens for 'payment_initiation' use a different creation flow in your backend.
       const path = isPaymentInitiation
         ? "/api/create_link_token_for_payment"
@@ -86,12 +87,13 @@ const Main = () => {
         }
       });
 
-      console.log("response:" +  response.status)
+
       if (!response.ok) {
         dispatch({ type: "SET_STATE", state: { linkToken: null } });
         return;
       }
       const data = await response.json();
+
       if (data) {
         if (data.error != null) {
           dispatch({

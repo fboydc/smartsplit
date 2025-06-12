@@ -14,6 +14,7 @@ const Link = () => {
   const onSuccess = React.useCallback(
     (public_token: string) => {
       // If the access_token is needed, send public_token to server
+      console.log("public token", public_token);
       const exchangePublicTokenForAccessToken = async () => {
         const response = await fetch("/api/set_access_token", {
           method: "POST",
@@ -35,6 +36,7 @@ const Link = () => {
           return;
         }
         const data = await response.json();
+        console.log("access token data", data);
         dispatch({
           type: "SET_STATE",
           state: {

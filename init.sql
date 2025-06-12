@@ -85,6 +85,7 @@ INSERT INTO "Category" ("category_id", "plaid_category_primary_descriptor", "pla
 INSERT INTO "Category" ("category_id", "plaid_category_primary_descriptor", "plaid_category_detailed_descriptor", "category_name","category_description") VALUES ('bb29d737-319e-4585-864c-a00701b2a231', 'ENTERTAINMENT', 'ENTERTAINMENT_TV_AND_MOVIES', 'Subscription Service', 'Subscription, Services');
 INSERT INTO "Category" ("category_id", "plaid_category_primary_descriptor", "plaid_category_detailed_descriptor", "category_name","category_description") VALUES ('30bb0179-90db-4f99-a0bb-45abbbff8efb', 'GENERAL_SERVICES', 'GENERAL_SERVICES_INSURANCE',  'Insurance', 'Insurance, Services');
 INSERT INTO "Category" ("category_id", "plaid_category_primary_descriptor", "plaid_category_detailed_descriptor", "category_name","category_description") VALUES ('367e8925-3682-42f0-bbce-beb0eee2fbab', 'MEDICAL', 'MEDICAL_PHARMACIES_AND_SUPPLEMENTS',  'Pharmacy', 'Pharmacy, Health');
+INSERT INTO "Category" ("category_id", "plaid_category_primary_descriptor", "plaid_category_detailed_descriptor", "category_name","category_description") VALUES ('fdf97f4c-9739-43b9-acc7-2fb074bfb012', '', '',  'Savings', 'Emergency Funds, Savings');
 
 
 INSERT INTO "Income" ("income_id", "income_description", "income_amount", "user_id", "income_frequency") VALUES ('8693199c-c2c6-4f75-8138-bda75a186581', 'Salary', 5000, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'Semi-Monthly');

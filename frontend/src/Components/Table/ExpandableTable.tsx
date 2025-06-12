@@ -80,7 +80,6 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
                 
                 <tbody>
                     {
-
                         fields && fields.map((row) => (
                             <tr key={row.id}>
                                 <td>
@@ -90,20 +89,18 @@ const ExpandableTable: React.FC<ExpandableTableProps> =({
                                      <input type="text" value={row.amount} onChange={(e)=> handleChange(row.id, "amount", e.target.value)}/>
                                 </td>
                                 <td>
-
-                                    <select value={row.category || "" } onChange={(e)=> handleChange(row.id, "category", e.target.value)}>
+                                <select value={row.category || "" } onChange={(e)=> handleChange(row.id, "category", e.target.value)}>
                                     {categories.map((category) => (
                                         <option key={category.id} value={category.id}>
                                             {category.name}
                                         </option>
                                     ))}
-                                    </select>
+                                </select>
                                 </td>
                                 <td>
                                     <button className={styles.tableButton} onClick={() => removeRow(row.id)}>Remove</button>
                                 </td>
                             </tr>
-                         
                         ))
 
                     /*}

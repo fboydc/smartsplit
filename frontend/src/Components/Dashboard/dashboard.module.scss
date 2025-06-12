@@ -67,6 +67,8 @@ h2 {
     flex-wrap: wrap;
     height: 100%;
     width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .position-relative {
@@ -129,6 +131,8 @@ h2 {
         flex: 0 0 auto;
         width: 33%;
     }
+
+
 
 
 }

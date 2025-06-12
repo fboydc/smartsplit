@@ -50,6 +50,7 @@ const BudgetSetup = () => {
   const [totalWantsPct, setTotalWantsPct] = useState(0);
   const [totalWantsAmt, setTotalWantsAmt] = useState("");
   const [allocatedPct, setAllocatedPct] = useState(0);
+  const [totalAllocated, setTotalAllocated] = useState(0);
   const [totalDebtsPct, setTotalDebtsPct] = useState(0);
   const [totalDebtsAmt, setTotalDebtsAmt] = useState("");
   const [totalSavingsPct, setTotalSavingsPct] = useState(0);
@@ -165,14 +166,12 @@ const BudgetSetup = () => {
 
 
    const updateMonthlyIncome = (incomeAmt: string) => { 
-        //setMonthlyIncome({value: formatCurrency(incomeAmt)});
-        //(updatedExpenses.reduce((total, expense) => total + expense.amount, 0) / totalIncome) * 100
         allocGroup.forEach((group) => {
           group.allocation_pct = (group.allocation_total / reconvertToCurrency(incomeAmt)) * 100;
         })
 
         setAllocGroup(allocGroup);
-        setAllocatedPct(updateTotalAllocation(reconvertToCurrency(incomeAmt), allocGroup));
+        updateTotalAllocation(reconvertToCurrency(incomeAmt), allocGroup);
 
         dispatch({ type: "SET_STATE", state: { totalIncome: reconvertToCurrency(incomeAmt) }});
 
@@ -270,14 +269,13 @@ const BudgetSetup = () => {
         allocation_pct: (updatedExpenses.reduce((total, expense) => total + Number(expense.amount), 0) / totalIncome) * 100,
       }
        setAllocGroup(updatedAllocGroup);
-
-
-      setAllocatedPct(updateTotalAllocation(totalIncome, updatedAllocGroup));
+       updateTotalAllocation(totalIncome, updatedAllocGroup)
+      //setAllocatedPct(updateTotalAllocation(totalIncome, updatedAllocGroup));
 
    }
 
 
-   const updateTotalAllocation = (total_income: number, allocation_groups: AllocationGroup[]): number => {
+   const updateTotalAllocation = (total_income: number, allocation_groups: AllocationGroup[]) => {
 
       var total = 0.0;
       var pct = 0.0;
@@ -286,7 +284,11 @@ const BudgetSetup = () => {
         total =  total + group.allocation_total;
       })
       pct = (total / total_income) * 100;
-      return pct;
+
+      setAllocatedPct(pct)
+      setTotalAllocated(total);
+
+      //return pct;
    }
 
 
@@ -349,13 +351,13 @@ const BudgetSetup = () => {
       allocationGroups.push(group);
     });
 
-    const savingAllocations: AllocationGroup = {
+    /*const savingAllocations: AllocationGroup = {
       allocation_type: "Savings",
       allocation_total: income_total - allocatedAmt,
       allocation_pct: ((income_total - allocatedAmt)/ income_total) * 100,
       current_allocation: 0,
       expenses: [],
-    }
+    }*/
 
   /*  const savingsBucket: Expense = {
       id: expenses[expenses.length-1].id + 1,
@@ -434,7 +436,7 @@ const BudgetSetup = () => {
           console.log("Allocation Groups", allocationGroups);
 
           setAllocGroup(allocationGroups);
-          setAllocatedPct(updateTotalAllocation(income_total, allocationGroups));
+          updateTotalAllocation(income_total, allocationGroups);
 
           //Should call filter expenses by allocations here
           
@@ -457,21 +459,25 @@ const BudgetSetup = () => {
           <p>Enter your monthly income and we will help you allocate it to your needs, wants, and debt repayment.</p>
           <br />
           <div className={styles.row}>
-            <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
+            <div className={`${styles['col-md-2']} ${styles['col-lg-2']}  ${styles['form-input']}`}>
               <label>Monthly Income</label>
               <input type="text" placeholder="$5,000" onChange={(e)=>{updateMonthlyIncome(e.target.value)}} value={formatCurrency(totalIncome + "")} className={styles.inputIncome}/>
             </div>
-            <div className={`${styles['col-lg-3']}`}>
-                <label>Total Non-Savings Allocation</label>
-                <p>{truncateDecimals(allocatedPct)}%</p>
-            </div>
-            <div className={`${styles['col-md-3']} ${styles['col-lg-3']}  ${styles['form-input']}`}>
+            <div className={`${styles['col-md-2']} ${styles['col-lg-2']}  ${styles['form-input']}`}>
               <label>Pay Frequency</label>
               <select className={styles.inputIncome} value={payFrequency} onChange={(e) => setPayFrequency(parseInt(e.target.value))}>
                 {payFrequencies.map((frequency) => (
                   <option key={frequency.id} value={frequency.id}>{frequency.name}</option>
                 ))}
               </select>
+            </div>
+             <div className={`${styles['col-lg-2']}`}>
+                <label>Total Non-Savings Allocation</label>
+                <p>{truncateDecimals(allocatedPct)}%</p>
+            </div>
+            <div className={`${styles['col-lg-2']}`}>
+              <label>Unallocated Amt</label>
+              <p>{totalIncome - totalAllocated}</p>
             </div>
           </div>
         </div>

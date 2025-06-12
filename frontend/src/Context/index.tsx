@@ -30,6 +30,7 @@ interface QuickstartState {
   user_id: string | null;
   user: string | null;
   sessionToken: string;
+  savedAllocationGroups: Allocation[];
 }
 
 const initialState: QuickstartState = {
@@ -60,7 +61,8 @@ const initialState: QuickstartState = {
   isAuthenticated: false,
   user_id: null,
   user: null,
-  sessionToken: ""
+  sessionToken: "",
+  savedAllocationGroups: []
 };
 
 
