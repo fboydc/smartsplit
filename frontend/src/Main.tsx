@@ -5,11 +5,13 @@ import Products from "./Components/ProductTypes/Products";
 import Categories from "./Components/Dashboard/BudgetSetup";
 import Items from "./Components/ProductTypes/Items";
 import Context from "./Context";
+import Sidebar from "./Components/Navigation/Sidebar";
 
 import styles from "./App.module.scss";
 import { CraCheckReportProduct } from "plaid";
 import { Navigate, useNavigate } from "react-router";
 import Dashboard from "./Components/Dashboard/Dashboard";
+import ContentView from "./Components/Views/ContentView";
 
 const Main = () => {
   const { linkSuccess, isPaymentInitiation, itemId, dispatch, isAuthenticated, sessionToken } =
@@ -142,9 +144,10 @@ const Main = () => {
       <Header />
       <div className={styles.container}>
         {linkSuccess && (
-          <>
-            <Dashboard />           
-          </>
+          <div className={styles.row}>
+            <Sidebar />
+            <ContentView />            
+          </div>
         )}
       </div>
     </div>

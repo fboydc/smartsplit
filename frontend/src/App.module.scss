@@ -7,3 +7,16 @@ $threads-font-path: "~plaid-threads/fonts";
   width: 100%;
 }
 
+.app {
+  width: 100%;
+  height: 100%;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+}
