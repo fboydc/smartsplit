@@ -1,6 +1,11 @@
 import React, { useContext } from "react";
 import styles from "./navigation.module.scss";
 
+
+function navigateTo() {
+    
+}
+
 const Sidebar = () => {
     return (
             <div className={`${styles.sidebar} ${styles['sidebar-nav']} ${styles['col-md-2']}`}>
@@ -9,7 +14,7 @@ const Sidebar = () => {
                         <button className={`${styles['btn']} ${styles['active']}`}>Budget Distribution</button>
                     </li>
                     <li className={styles.listGroupItem}>
-                        <button className={`${styles['btn']}`}>Dashboard</button>
+                        <button className={`${styles['btn']}`} onClick={navigateTo}>Dashboard</button>
                     </li>
                     <li className={styles.listGroupItem}>
                         <button className={`${styles['btn']}`}>Bank Setup</button>
