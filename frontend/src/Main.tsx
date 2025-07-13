@@ -1,8 +1,8 @@
-import React, { useEffect, useContext, useCallback } from "react";
+import React, { useEffect, useContext, useCallback, useState } from "react";
 
 import Header from "./Components/Headers";
 import Products from "./Components/ProductTypes/Products";
-import Categories from "./Components/Dashboard/BudgetSetup";
+import Categories from "./Components/Budget/BudgetSetup";
 import Items from "./Components/ProductTypes/Items";
 import Context from "./Context";
 import Sidebar from "./Components/Navigation/Sidebar";
@@ -14,6 +14,10 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import ContentView from "./Components/Views/ContentView";
 
 const Main = () => {
+
+  const [activeView, setActiveView] = useState<string>('budget');
+
+
   const { linkSuccess, isPaymentInitiation, itemId, dispatch, isAuthenticated, sessionToken } =
     useContext(Context);
 
@@ -145,8 +149,8 @@ const Main = () => {
       <div className={styles.container}>
         {linkSuccess && (
           <div className={styles.row}>
-            <Sidebar />
-            <ContentView />            
+            <Sidebar activeView={activeView} setActiveView={setActiveView}  />
+            <ContentView activeView={activeView} />
           </div>
         )}
       </div>

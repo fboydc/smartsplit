@@ -4,7 +4,7 @@ import Endpoint from "../Endpoint";
 import Context from "../../Context";
 import ProductTypesContainer from "../ProductTypes/ProductTypesContainer";
 import def from "ajv/dist/vocabularies/discriminator";
-import BudgetSetup  from "./BudgetSetup";
+import BudgetSetup  from "../Budget/BudgetSetup";
 import styles from "./dashboard.module.scss";
 
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect ,useCallback, useState, ChangeEvent,KeyboardEvent } from "react";
 import Context from "../../Context";
 import ExpandableTable from "../Table/ExpandableTable";
-import styles from "./dashboard.module.scss";
+import styles from "./budget.module.scss";
 import { set } from "immer/dist/internal";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

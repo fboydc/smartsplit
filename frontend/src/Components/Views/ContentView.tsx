@@ -1,17 +1,21 @@
-import BudgetSetup from '../Dashboard/BudgetSetup';
+import React, { useState } from 'react';
+import BudgetSetup from '../Budget/BudgetSetup';
 import styles from './views.module.scss';
+import Dashboard from '../Dashboard/Dashboard';
+
+
+interface ContentViewProps {
+  activeView: string;
+}
 
 
 
-const ContentView = () => {
+const ContentView = ({ activeView }: ContentViewProps) => {
 
     return (
         <div className={`${styles['col-md-10']}`}>
-            <BudgetSetup />
-            {/* <Items /> */}
-            {/* <Categories /> */}
-            {/* <Dashboard /> */}
-            {/* <ContentView /> */}
+            {activeView === 'budget' && <BudgetSetup />}
+            {activeView === 'dashboard' && <Dashboard />}
         </div>
     )
 
