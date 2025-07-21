@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.row}>
-       My Dashboard
+      
     </div>
   )
 
