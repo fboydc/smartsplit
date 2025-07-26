@@ -61,6 +61,7 @@ const Login = () => {
                 <label> Not Registered? </label><a href="#">Register Here</a>
             </form>
             </div>
+            
             {
                 authError.error_code &&  
                 <div><AuthError /></div>

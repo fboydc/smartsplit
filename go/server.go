@@ -90,7 +90,8 @@ func init() {
 
 	// set constants from env
 	PLAID_CLIENT_ID = os.Getenv("PLAID_CLIENT_ID")
-	PLAID_SECRET = os.Getenv("PLAID_SECRET")
+	//PLAID_SECRET = os.Getenv("PLAID_SECRET")
+	PLAID_SECRET := os.Getenv("PLAID_SECRET")
 
 	if PLAID_CLIENT_ID == "" || PLAID_SECRET == "" {
 		log.Fatal("Error: PLAID_SECRET or PLAID_CLIENT_ID is not set. Did you copy .env.example to .env and fill it out?")

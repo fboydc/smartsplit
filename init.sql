@@ -63,7 +63,8 @@ CREATE TABLE IF NOT EXISTS "Income" (
 
 
 
-INSERT INTO "Users" ("user_id", "username", "email", "password_hash", "plaid_access_token") VALUES ('ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'admin', 'admin@smartsplit.com', '$2a$10$nLavVuPde6DTLfHwkoxKkOOYfUt/QZrIg2Uq0W5HcyetavCl7ND12', 'access-sandbox-5423b0c9-2019-4f5e-bddd-2b41e52e5651');
+INSERT INTO "Users" ("user_id", "username", "email", "password_hash", "plaid_access_token") VALUES ('ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'admin', 'admin@smartsplit.com', '$2a$10$nLavVuPde6DTLfHwkoxKkOOYfUt/QZrIg2Uq0W5HcyetavCl7ND12', 'access-sandbox-5423b0c9-2019-4f5e-bddd-2b41e52e5651'); --acess token user
+--INSERT INTO "Users" ("user_id", "username", "email", "password_hash", "plaid_access_token") VALUES ('ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'admin', 'admin@smartsplit.com', '$2a$10$nLavVuPde6DTLfHwkoxKkOOYfUt/QZrIg2Uq0W5HcyetavCl7ND12', ''); -- No access token user
 
 INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('9f3c76e9-9d43-4480-a56d-a176b783f24d', 'Needs', 0.5, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
 INSERT INTO "Allocations" ("allocation_type", "allocation_description", "allocation_factor", "user_id") VALUES ('ac184cdf-b7ff-4eb9-b757-628770d566fb', 'Debts and Repayment', 0.1, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821');
@@ -90,6 +91,8 @@ INSERT INTO "Category" ("category_id", "plaid_category_primary_descriptor", "pla
 
 INSERT INTO "Income" ("income_id", "income_description", "income_amount", "user_id", "income_frequency") VALUES ('8693199c-c2c6-4f75-8138-bda75a186581', 'Salary', 5000, 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'Semi-Monthly');
 
+
+
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('Rent', 1500, '1ae53e57-8b82-45f2-a8cd-94d43932ab54', 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', '9f3c76e9-9d43-4480-a56d-a176b783f24d');
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('FPL', 100, 'c2f89cdc-5ff7-46fc-92b3-f14bbdec7404', 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', '9f3c76e9-9d43-4480-a56d-a176b783f24d');
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('Groceries', 500, 'b0332b93-42a8-4eac-936f-ab8d859e9ce3', 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', '9f3c76e9-9d43-4480-a56d-a176b783f24d');
@@ -103,6 +106,8 @@ INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_catego
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('Car insurance', 120, '30bb0179-90db-4f99-a0bb-45abbbff8efb', 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', '9f3c76e9-9d43-4480-a56d-a176b783f24d');
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('Credit card payment', 50, '615b48c8-7b43-42ff-b147-6580219235e6', 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'ac184cdf-b7ff-4eb9-b757-628770d566fb');
 INSERT INTO "Expenses" ("expense_description", "expense_amount", "expense_category", "user_id", "allocation_type") VALUES ('Student loan payment', 350, 'c91064d5-ac80-40a2-92db-b0d82ac7f4e5', 'ed1bec4c-0a1b-4783-b47f-16ba0650b821', 'ac184cdf-b7ff-4eb9-b757-628770d566fb');
+
+
 
 
 
