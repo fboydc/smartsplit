@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -71,14 +72,41 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
-type saveBudgetRequest struct {
-	UserID string `json:"user_id"`
-}
-
 type getBudgetResponse struct {
 	Expenses    []Expense    `json:"expenses"`
 	Incomes     []Income     `json:"incomes"`
 	Allocations []Allocation `json:"allocations"`
+}
+
+// Define the structure of the JSON data
+type Transaction struct {
+	TransactionID           string   `json:"transaction_id"`
+	AccountID               string   `json:"account_id"`
+	Amount                  float64  `json:"amount"`
+	ISOCurrencyCode         string   `json:"iso_currency_code"`
+	Date                    string   `json:"date"`
+	AuthorizedDate          string   `json:"authorized_date"`
+	Name                    string   `json:"name"`
+	MerchantName            string   `json:"merchant_name"`
+	PaymentChannel          string   `json:"payment_channel"`
+	Pending                 bool     `json:"pending"`
+	TransactionType         string   `json:"transaction_type"`
+	Category                []string `json:"category"`
+	CategoryID              string   `json:"category_id"`
+	PersonalFinanceCategory struct {
+		Primary         string `json:"primary"`
+		Detailed        string `json:"detailed"`
+		ConfidenceLevel string `json:"confidence_level"`
+	} `json:"personal_finance_category"`
+	Location struct {
+		City    string `json:"city"`
+		Region  string `json:"region"`
+		Country string `json:"country"`
+	} `json:"location"`
+}
+
+type getDummyTransactionsResponse struct {
+	LatestTransactions []Transaction `json:"latest_transactions"`
 }
 
 func init() {
@@ -183,6 +211,7 @@ func main() {
 		protected.GET("/api/cra/get_partner_insights", getCraPartnerInsightsHandler)
 		protected.POST("/api/save_budget", saveBudgetHandler)
 		protected.GET("/api/budget", getBudgetHandler)
+		protected.GET("/api/dummy/transactions", getDummyTransactions)
 	}
 
 	err = r.Run(":" + APP_PORT)
@@ -1197,5 +1226,26 @@ func getBudgetHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"budget": getBudgetResponse,
 	})
+
+}
+
+func getDummyTransactions(c *gin.Context) {
+
+	// Open the JSON file
+	file, err := os.Open("data/test_transactions(first period payment).json")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open JSON file"})
+		return
+	}
+	defer file.Close()
+
+	var response getDummyTransactionsResponse
+	if err := json.NewDecoder(file).Decode(&response); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to parse JSON file"})
+		return
+	}
+
+	// Send the parsed data as a JSON respons	e
+	c.JSON(http.StatusOK, gin.H{"latest_transactions": response.LatestTransactions})
 
 }
