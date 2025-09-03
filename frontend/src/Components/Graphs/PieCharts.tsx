@@ -99,7 +99,6 @@ export default function PieChart({
   padAngleDeg = 0,
   colors = DEFAULT_PALETTE,
   showLegend = true,
-  legendPosition = "right",
   animate = true,
   className = "",
   onSliceClick,
@@ -153,9 +152,7 @@ export default function PieChart({
   }
 
   // Layout helpers for legend
-  const containerClass = `flex ${
-    legendPosition === "right" ? "flex-row" : legendPosition === "left" ? "flex-row-reverse" : "flex-col"
-  } items-center gap-4 ${className}`;
+
 
   // Tooltip content
   const renderTooltip = (d: PieDatum | null) => {
@@ -170,8 +167,8 @@ export default function PieChart({
   };
 
   return (
-    <div className={containerClass}>
-      <div className="relative">
+    <div className={styles.containerClass}>
+      <div className={styles.chartContainer}>
         <svg
           width={size}
           height={size}
@@ -272,7 +269,7 @@ export default function PieChart({
       </div>
 
       {showLegend && (
-        <div className={`flex ${legendPosition === "right" ? "flex-col" : "flex-row"} gap-2`}> 
+        <div className={styles.legend}> 
           {slices.map((s) => (
             <button
               key={s.datum.id}

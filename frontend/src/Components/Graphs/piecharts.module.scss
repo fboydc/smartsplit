@@ -1,8 +1,19 @@
-.textxs{
 
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 300px
 }
 
-.pointmedium{
+.chartContainer {
+  width: 200px;
+}
 
-    
+.containerClass {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0;
 }

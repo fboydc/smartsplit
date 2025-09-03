@@ -25,10 +25,16 @@ const Header = () => {
 
   return (
     <div className={styles.grid}>
-      <h3 className={styles.title}>Welcome to Smart Split!</h3>
+      {
+        linkSuccess && (
+          <div className={styles.topMenu}>
 
+          </div>
+        )
+      }
       {!linkSuccess && (
         <>
+          <h3 className={styles.title}>Welcome to Smart Split!</h3>
           <h4 className={styles.subtitle}>
             The perfect way to keep your budget in check
           </h4>
