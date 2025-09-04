@@ -17,7 +17,7 @@ interface SidebarProps {
 
 const Sidebar = ({ activeView, setActiveView }: SidebarProps) => {
     return (
-            <div className={`${styles.sidebar} ${styles['sidebar-nav']} ${styles['col-lg-03']}`}>
+            <div className={`${styles.sidebar} ${styles['sidebar-nav']}`}>
                 <ul className={`${styles.listGroup} ${styles.siderbarNav}`}>
                     <li className={styles.listGroupItem}>
                             <button className={`${styles['btn']} ${ activeView === 'budget' ? styles['active'] : ''}`} onClick={() => setActiveView('budget')}>

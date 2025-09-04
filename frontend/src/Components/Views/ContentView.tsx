@@ -13,7 +13,7 @@ interface ContentViewProps {
 const ContentView = ({ activeView }: ContentViewProps) => {
 
     return (
-        <div className={`${styles['col-md-10']}`}>
+        <div className={`${styles['col-md-11']}`}>
             {activeView === 'budget' && <BudgetSetup />}
             {activeView === 'dashboard' && <Dashboard />}
         </div>

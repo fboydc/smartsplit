@@ -30,7 +30,11 @@ const Dashboard = () => {
         legendPosition="right"
         onSliceClick={(d) => alert(`clicked ${d.label}`)}
       />
+       
       </div>
+       <div>
+          Other Stuff
+        </div>
     </div>
   )
 

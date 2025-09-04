@@ -194,8 +194,8 @@ export default function PieChart({
                 <g
                   key={s.datum.id}
                   transform={`translate(${tx}, ${ty})`}
-                  onMouseEnter={() => setHoverId(s.datum.id)}
-                  onMouseLeave={() => setHoverId(null)}
+                  /*onMouseEnter={() => setHoverId(s.datum.id)}
+                  onMouseLeave={() => setHoverId(null)}*/
                 >
                   <AnimatePresence>
                     <motion.path
@@ -217,7 +217,7 @@ export default function PieChart({
                   </AnimatePresence>
 
                   {/* optional small label near outer arc when hovered */}
-                  {hover && (
+                  {/*hover && (
                     <text
                       x={
                         (outerR + 12) * Math.cos(((mid - 90) * Math.PI) / 180)
@@ -232,7 +232,7 @@ export default function PieChart({
                     >
                       {s.datum.label} — {s.percent.toFixed(1)}%
                     </text>
-                  )}
+                  )*/}
                 </g>
               );
             })}
@@ -247,7 +247,7 @@ export default function PieChart({
                 className="text-sm font-semibold"
                 style={{ fontSize: 14 }}
               >
-                {total}
+                
               </text>
             </g>
           </g>
@@ -268,28 +268,20 @@ export default function PieChart({
         </div>
       </div>
 
-      {showLegend && (
-        <div className={styles.legend}> 
-          {slices.map((s) => (
-            <button
-              key={s.datum.id}
-              onClick={() => onSliceClick?.(s.datum)}
-              onMouseEnter={() => setHoverId(s.datum.id)}
-              onMouseLeave={() => setHoverId(null)}
-              className={`flex items-center gap-2 px-2 py-1 rounded hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-offset-1`}
-              style={{ minWidth: 120 }}
-            >
-              <span
-                aria-hidden
-                className="w-3 h-3 rounded"
-                style={{ background: s.color, display: "inline-block" }}
-              />
-              <span className="text-xs truncate">{s.datum.label}</span>
-              <span className="text-xs text-neutral-500 ml-auto">{s.percent.toFixed(1)}%</span>
-            </button>
-          ))}
-        </div>
-      )}
+    
+{showLegend && (
+  <ul className={styles.legendList}>
+    {slices.map((s) => (
+      <li key={s.datum.id} className={styles.legendItem}>
+        <span
+          className={styles.legendColor}
+          style={{ background: s.color, display: "inline-block" }}
+        />
+        <span className={styles.legendLabel}>{s.datum.label}</span>
+      </li>
+    ))}
+  </ul>
+)}
     </div>
   );
 }

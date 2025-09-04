@@ -89,15 +89,16 @@ h2 {
     padding: 1rem;
     height: 100%;
     display: block;
-
+    max-width: 75px;
+    width: 5%;
 }
 
 .siderbarNav {
     padding: 0;
     margin-top: 3rem;
 }
-.col-lg-03 {
-    width: 3%;
+.col-lg-05 {
+    width: 5%;
 }
 /*
 .form-input {
