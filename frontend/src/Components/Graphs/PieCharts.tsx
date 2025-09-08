@@ -81,11 +81,11 @@ function describeArc(
 }
 
 const DEFAULT_PALETTE = [
-  "#4F46E5",
-  "#06B6D4",
   "#F59E0B",
-  "#EF4444",
+  "#06B6D4",
   "#10B981",
+  "#EF4444",
+  "#4F46E5",
   "#8B5CF6",
   "#F97316",
   "#84CC16",
@@ -207,8 +207,8 @@ export default function PieChart({
                       animate={{ opacity: 1, pathLength: 1 }}
                       exit={{ opacity: 0, pathLength: 0 }}
                       transition={{ duration: animate ? 0.6 : 0 }}
-                      style={{ cursor: onSliceClick ? "pointer" : "default" }}
-                      onClick={() => onSliceClick?.(s.datum)}
+                      //style={{ cursor: onSliceClick ? "pointer" : "default" }}
+                     // onClick={() => onSliceClick?.(s.datum)}
                       role="button"
                       tabIndex={0}
                       onKeyDown={(e) => handleKeyPress(e, s.datum)}
